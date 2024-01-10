@@ -3,6 +3,7 @@ import { Inter as FontSans } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 import { cn } from "@/lib/utils";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: "TaskRaise",
@@ -26,6 +27,12 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head />
+      <Script
+        id="googlemaps"
+        type="text/javascript"
+        strategy="lazyOnload"
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBgfQSsBnEUn1pNp-XHatpzO-ttacH1E88&libraries=places"
+      />
 
       <body
         className={cn(

@@ -9,21 +9,115 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
+      order_staffing: {
+        Row: {
+          assigned: string | null
+          created_at: string
+          id: number
+          organization: number
+        }
+        Insert: {
+          assigned?: string | null
+          created_at?: string
+          id?: number
+          organization: number
+        }
+        Update: {
+          assigned?: string | null
+          created_at?: string
+          id?: number
+          organization?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_staffing_assigned_fkey"
+            columns: ["assigned"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "order_staffing_organization_fkey"
+            columns: ["organization"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      orders: {
+        Row: {
+          created_at: string | null
+          customer_id: string
+          customer_username: string
+          details: string
+          id: number
+          org_id: number
+          price: number
+          status: Database["public"]["Enums"]["order_status"]
+        }
+        Insert: {
+          created_at?: string | null
+          customer_id: string
+          customer_username: string
+          details: string
+          id?: number
+          org_id?: number
+          price: number
+          status?: Database["public"]["Enums"]["order_status"]
+        }
+        Update: {
+          created_at?: string | null
+          customer_id?: string
+          customer_username?: string
+          details?: string
+          id?: number
+          org_id?: number
+          price?: number
+          status?: Database["public"]["Enums"]["order_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_customer_username_fkey"
+            columns: ["customer_username"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["username"]
+          },
+          {
+            foreignKeyName: "orders_org_id_fkey"
+            columns: ["org_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       organizations: {
         Row: {
           created_at: string
+          description: string
           id: number
           org_name: string
           org_owner: string
         }
         Insert: {
           created_at?: string
+          description: string
           id?: number
           org_name: string
           org_owner: string
         }
         Update: {
           created_at?: string
+          description?: string
           id?: number
           org_name?: string
           org_owner?: string
@@ -40,7 +134,6 @@ export interface Database {
       }
       profiles: {
         Row: {
-          created_at: string
           email: string | null
           first_name: string | null
           id: string
@@ -49,7 +142,6 @@ export interface Database {
           username: string | null
         }
         Insert: {
-          created_at?: string
           email?: string | null
           first_name?: string | null
           id: string
@@ -58,7 +150,6 @@ export interface Database {
           username?: string | null
         }
         Update: {
-          created_at?: string
           email?: string | null
           first_name?: string | null
           id?: string
@@ -85,40 +176,30 @@ export interface Database {
       }
       requests: {
         Row: {
-          created_at: string
           id: number
-          org: number | null
+          inviter_name: string | null
           org_name: string | null
           user_invite: string
         }
         Insert: {
-          created_at?: string
           id?: number
-          org?: number | null
+          inviter_name?: string | null
           org_name?: string | null
           user_invite: string
         }
         Update: {
-          created_at?: string
           id?: number
-          org?: number | null
+          inviter_name?: string | null
           org_name?: string | null
           user_invite?: string
         }
         Relationships: [
           {
-            foreignKeyName: "requests_id_fkey"
-            columns: ["id"]
-            isOneToOne: true
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "requests_org_fkey"
-            columns: ["org"]
+            foreignKeyName: "requests_inviter_name_fkey"
+            columns: ["inviter_name"]
             isOneToOne: false
-            referencedRelation: "organizations"
-            referencedColumns: ["id"]
+            referencedRelation: "profiles"
+            referencedColumns: ["username"]
           },
           {
             foreignKeyName: "requests_org_name_fkey"
@@ -140,14 +221,20 @@ export interface Database {
         Row: {
           created_at: string
           id: number
+          service_description: string
+          service_title: string
         }
         Insert: {
           created_at?: string
           id?: number
+          service_description: string
+          service_title: string
         }
         Update: {
           created_at?: string
           id?: number
+          service_description?: string
+          service_title?: string
         }
         Relationships: []
       }
@@ -159,6 +246,12 @@ export interface Database {
       [_ in never]: never
     }
     Enums: {
+      order_status:
+        | "REQUESTED"
+        | "DISPUTED"
+        | "COMPLETED"
+        | "REJECTED"
+        | "ONGOING"
       role: "GENERAL" | "MEMBER" | "ADMIN"
     }
     CompositeTypes: {

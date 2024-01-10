@@ -39,6 +39,7 @@ import { useEffect, useState, useCallback } from "react";
 import FinishProfile from "@/components/auth/FinishProfile";
 import { Sidebar } from "@/components/dashboard/SideBar";
 import { useRouter } from "next/navigation";
+import DashboardNavigationBar from "@/components/dashboard/DashboardNavigationBar";
 
 export default function DashboardLayout({
   children,
@@ -100,10 +101,8 @@ export default function DashboardLayout({
       {dataFetch && (
         <div className="">
           <div className="bg-background">
-            <div className="grid lg:grid-cols-5 h-screen">
-              <Sidebar className="" userName={dataFetch?.username || ""} />
-              <div className="col-span-4">{children}</div>
-            </div>
+            <DashboardNavigationBar />
+            <div className="">{children}</div>
           </div>
         </div>
       )}

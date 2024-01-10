@@ -17,8 +17,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { supabase } from "@/app/config/supabaseClient";
-import { useState } from "react";
-import { User } from "@supabase/supabase-js";
+import { Dispatch, SetStateAction, useMemo, useState } from "react";
+import usePlacesAutocomplete from "use-places-autocomplete";
+import { PlacesAutocomplete } from "./PlacesAutocomplete";
 
 const formSchema = z.object({
   org_name: z
@@ -39,7 +40,13 @@ const formSchema = z.object({
     }),
 });
 
-export default function CreateOrganization({ user }: { user: string }) {
+export default function CreateOrganization({
+  user,
+  dialogState,
+}: {
+  user: string;
+  dialogState: Dispatch<SetStateAction<boolean>>;
+}) {
   const router = useRouter();
   const [error, setError] = useState("");
   const [showError, setShowError] = useState(false);
@@ -75,7 +82,6 @@ export default function CreateOrganization({ user }: { user: string }) {
       router.refresh();
     }
   };
-
   return (
     <>
       <section className="">
@@ -112,13 +118,29 @@ export default function CreateOrganization({ user }: { user: string }) {
               </FormItem>
             )}
           />
+          <PlacesAutocomplete />
           <section>
             {showError && (
               <p className="text-red-500 text-xs font-semibold">{error}</p>
             )}{" "}
-            <Button type="submit" className="w-full mt-2">
-              <span className="font-bold text-sm ">Create</span>
-            </Button>
+            <div className="flex">
+              <div className="mr-auto">
+                <Button type="submit" className="mt-2">
+                  <span className="font-semibold text-sm ">Create</span>
+                </Button>
+              </div>
+              <div className="ml-auto">
+                <Button
+                  type="button"
+                  onClick={() => {
+                    dialogState(false);
+                  }}
+                  className="bg-red-500 hover:bg-red-400 mt-2"
+                >
+                  <span className="font-semibold text-sm ">Close</span>
+                </Button>
+              </div>
+            </div>
           </section>
 
           <section className="w-full flex justify-center items-center">

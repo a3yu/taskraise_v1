@@ -3,7 +3,8 @@ import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Database } from "@/types/supabase";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { InviteList } from "@/components/dashboard/InviteList";
+import NonAssignedUser from "@/components/dashboard/NonAssignedUser";
+import AssignedUser from "@/components/dashboard/AssignedUser";
 
 async function DashboardHome() {
   const supabase = createServerComponentClient<Database>({ cookies });
@@ -28,39 +29,24 @@ async function DashboardHome() {
       .select("*")
       .eq("id", userData.data.organization)
       .single();
-    console.log(orgData);
-    if (!orgData.data) {
-      return (
-        <>
-          <h1>Error</h1>
-        </>
-      );
+    if (orgData.data) {
+      const orgUsers = await supabase
+        .from("profiles")
+        .select()
+        .eq("organization", orgData.data.id);
+      const orgOrders = await supabase
+        .from("orders")
+        .select("*")
+        .eq("org_id", orgData.data.id);
+      if (orgUsers.data && orgOrders.data) {
+        return (
+          <AssignedUser orgOrders={orgOrders.data} orgData={orgData.data} />
+        );
+      }
     }
-    return (
-      <div className="p-16">
-        <h1 className="text-4xl font-bold font-heading">
-          {orgData.data.org_name}
-        </h1>
-        <h1 className="text-md mt-2">Hello, {userData.data.first_name}!</h1>
-      </div>
-    );
+  } else {
+    return <NonAssignedUser userData={userData.data} />;
   }
-  return (
-    <div className="p-16">
-      <h1 className="text-4xl font-bold font-heading">
-        Hello, {userData.data.first_name}!
-      </h1>
-      <>
-        <h3 className="my-4 text-md">
-          You are not apart of any organizations. Accept an invite or create
-          one:
-        </h3>
-        <div className="pr-20">
-          <InviteList />
-        </div>
-      </>
-    </div>
-  );
 }
 
 export default DashboardHome;
