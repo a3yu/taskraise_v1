@@ -37,93 +37,89 @@ import {
 } from "@/components/ui/table";
 import { Tables } from "@/types/supabase";
 import { supabase } from "@/app/config/supabaseClient";
+import { useEffect, useState } from "react";
+import { User } from "@supabase/supabase-js";
+import { useRouter } from "next/navigation";
 import {
   AlertDialog,
-  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogTrigger,
-} from "../ui/alert-dialog";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+} from "@/components/ui/alert-dialog";
+import { CreateService } from "@/components/dashboard/CreateService";
 
-export const columns: ColumnDef<Tables<"orders">>[] = [
+export const columns: ColumnDef<Tables<"services">>[] = [
   {
-    accessorKey: "customer_username",
-    header: () => <div className="">Customer</div>,
-    cell: ({ row }) => {
-      return (
-        <div className="lowercase font-bold">
-          {row.getValue("customer_username")}
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "price",
-    header: () => <div className="">Price</div>,
-    cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("price"));
-
-      // Format the amount as a dollar amount
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(amount);
-
-      return <div className=" font-medium">{formatted}</div>;
-    },
-  },
-  {
-    id: "actions",
+    id: "select",
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+      />
+    ),
+    enableSorting: false,
     enableHiding: false,
-    cell: ({ row }) => {
-      const payment = row.original;
-
-      return (
-        <div className="float-right">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>View customer</DropdownMenuItem>
-              <DropdownMenuItem>View payment details</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      );
-    },
   },
 ];
 
-export function OngoingOrders({
-  orgOrders,
-}: {
-  orgOrders: Tables<"orders">[];
-}) {
+export default function DataTableDemo() {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
-  const [data, setData] = React.useState<Tables<"orders">[]>([]);
-  React.useEffect(() => {
-    const orgOrdersRequest = orgOrders.filter((order) => {
-      return order.status === "ONGOING";
-    });
-
-    setData(orgOrdersRequest);
-  }, []);
-
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
+  const [user, setUser] = useState<User | null>(null);
+  const [show, setShow] = useState(false);
+  const [dataFetch, setData] = useState<Tables<"profiles"> | null>(null);
+  const [data, setServices] = useState<Tables<"services">[]>([]);
+  const router = useRouter();
+
+  const fetchData = React.useCallback(async () => {
+    try {
+      const userResponse = await supabase.auth.getSession();
+      const user = userResponse.data.session?.user;
+      if (user) setUser(user);
+      else {
+        router.push("/");
+      }
+
+      if (user) {
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("id", user.id)
+          .single();
+
+        setData(data as Tables<"profiles">);
+        if (dataFetch) {
+          const { data } = await supabase
+            .from("services")
+            .select("*")
+            .eq("id", dataFetch.organization);
+          setServices(data as Tables<"services">[]);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching data");
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const table = useReactTable({
     data,
@@ -136,11 +132,6 @@ export function OngoingOrders({
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
-    initialState: {
-      pagination: {
-        pageSize: 4,
-      },
-    },
     state: {
       sorting,
       columnFilters,
@@ -150,22 +141,62 @@ export function OngoingOrders({
   });
 
   return (
-    <div className="w-full">
+    <div className="w-full px-16 py-7">
+      <h1 className="font-heading text-4xl">Services</h1>
       <div className="flex items-center py-4">
         <Input
-          placeholder="Customer Search"
-          value={
-            (table
-              .getColumn("customer_username")
-              ?.getFilterValue() as string) ?? ""
-          }
+          placeholder="Service Search"
+          value={(table.getColumn("email")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table
-              .getColumn("customer_username")
-              ?.setFilterValue(event.target.value)
+            table.getColumn("email")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
+        <div className="ml-auto space-x-3">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline">
+                Columns <ChevronDown className="ml-2 h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {table
+                .getAllColumns()
+                .filter((column) => column.getCanHide())
+                .map((column) => {
+                  return (
+                    <DropdownMenuCheckboxItem
+                      key={column.id}
+                      className="capitalize"
+                      checked={column.getIsVisible()}
+                      onCheckedChange={(value) =>
+                        column.toggleVisibility(!!value)
+                      }
+                    >
+                      {column.id}
+                    </DropdownMenuCheckboxItem>
+                  );
+                })}
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <AlertDialog open={show}>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <h2 className="font-heading font-semibold text-2xl">
+                  Create New Service
+                </h2>
+              </AlertDialogHeader>
+              <CreateService dialogState={setShow} />
+            </AlertDialogContent>
+          </AlertDialog>
+          <Button
+            onClick={() => {
+              setShow(true);
+            }}
+          >
+            Create New Service
+          </Button>
+        </div>
       </div>
       <div className="rounded-md border">
         <Table>
@@ -218,6 +249,10 @@ export function OngoingOrders({
         </Table>
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
+        <div className="flex-1 text-sm text-muted-foreground">
+          {table.getFilteredSelectedRowModel().rows.length} of{" "}
+          {table.getFilteredRowModel().rows.length} row(s) selected.
+        </div>
         <div className="space-x-2">
           <Button
             variant="outline"

@@ -5,11 +5,21 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import NonAssignedUser from "@/components/dashboard/NonAssignedUser";
 import AssignedUser from "@/components/dashboard/AssignedUser";
+import { NextRequest } from "next/server";
 
-async function DashboardHome() {
+async function DashboardHome({
+  params,
+  searchParams,
+}: {
+  params: { slug: string };
+  searchParams: { [key: string]: string | string[] | undefined };
+}) {
   const supabase = createServerComponentClient<Database>({ cookies });
   const userResponse = await supabase.auth.getSession();
   const user = userResponse.data.session?.user;
+  if ("update" in searchParams) {
+    redirect("/dashboard");
+  }
 
   if (!user) {
     redirect("/");
@@ -38,9 +48,14 @@ async function DashboardHome() {
         .from("orders")
         .select("*")
         .eq("org_id", orgData.data.id);
+      console.log(orgOrders);
       if (orgUsers.data && orgOrders.data) {
         return (
-          <AssignedUser orgOrders={orgOrders.data} orgData={orgData.data} />
+          <AssignedUser
+            orgOrders={orgOrders.data}
+            orgData={orgData.data}
+            orgUsers={orgUsers.data}
+          />
         );
       }
     }

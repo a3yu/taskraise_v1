@@ -1,11 +1,17 @@
 import usePlacesAutocomplete from "use-places-autocomplete";
 import { useLoadScript } from "@react-google-maps/api";
 import { Input } from "../ui/input";
+import { Dispatch, SetStateAction } from "react";
+import { X } from "lucide-react";
 
 export const PlacesAutocomplete = ({
   onAddressSelect,
+  selectState,
+  setSelectState,
 }: {
   onAddressSelect?: (address: string) => void;
+  selectState: boolean;
+  setSelectState: Dispatch<SetStateAction<boolean>>;
 }) => {
   const {
     ready,
@@ -14,7 +20,10 @@ export const PlacesAutocomplete = ({
     setValue,
     clearSuggestions,
   } = usePlacesAutocomplete({
-    requestOptions: { componentRestrictions: { country: "us" } },
+    requestOptions: {
+      componentRestrictions: { country: "us" },
+      types: ["(cities)"],
+    },
     debounce: 300,
     cache: 86400,
   });
@@ -29,7 +38,7 @@ export const PlacesAutocomplete = ({
 
       return (
         <li
-          className="bg-white border-gray-300  hover:cursor-pointer p-2"
+          className="bg-white border-gray-300  hover:cursor-pointer hover:bg-gray-100 p-2"
           key={place_id}
           onClick={() => {
             setValue(description, false);
@@ -44,17 +53,22 @@ export const PlacesAutocomplete = ({
   };
 
   return (
-    <div>
-      <Input
-        value={value}
-        disabled={!ready}
-        onChange={(e) => setValue(e.target.value)}
-        placeholder="Search Location"
-      />
+    <>
+      <div className="flex">
+        <h1>{selectState}</h1>
+        <Input
+          value={value}
+          disabled={!ready || selectState}
+          onChange={(e) => setValue(e.target.value)}
+          placeholder="Search Location"
+        />
+      </div>
 
       {status === "OK" && (
-        <ul className="m-2 border-2 border-gray-200">{renderSuggestions()}</ul>
+        <ul className="m-2 border-2 rounded border-gray-200">
+          {renderSuggestions()}
+        </ul>
       )}
-    </div>
+    </>
   );
 };

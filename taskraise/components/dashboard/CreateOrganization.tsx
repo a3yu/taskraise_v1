@@ -18,9 +18,12 @@ import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { supabase } from "@/app/config/supabaseClient";
 import { Dispatch, SetStateAction, useMemo, useState } from "react";
-import usePlacesAutocomplete from "use-places-autocomplete";
+import usePlacesAutocomplete, {
+  getGeocode,
+  getLatLng,
+} from "use-places-autocomplete";
 import { PlacesAutocomplete } from "./PlacesAutocomplete";
-
+import { X } from "lucide-react";
 const formSchema = z.object({
   org_name: z
     .string()
@@ -38,6 +41,12 @@ const formSchema = z.object({
     .max(300, {
       message: "Description must be at most 300 characters.",
     }),
+  location: z
+    .string()
+    .min(1, { message: "Organization must have a location." }),
+  location_text: z
+    .string()
+    .min(1, { message: "Organization must have a location." }),
 });
 
 export default function CreateOrganization({
@@ -48,6 +57,7 @@ export default function CreateOrganization({
   dialogState: Dispatch<SetStateAction<boolean>>;
 }) {
   const router = useRouter();
+  const [locationSelect, setLocationSelect] = useState(false);
   const [error, setError] = useState("");
   const [showError, setShowError] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
@@ -55,17 +65,21 @@ export default function CreateOrganization({
     defaultValues: {
       org_name: "",
       description: "",
+      location: "",
     },
   });
+  const { setValue } = form;
 
   const onSubmit = async function (values: z.infer<typeof formSchema>) {
-    console.log(values);
+    console.log(values.location);
     const { data, error } = await supabase
       .from("organizations")
       .insert({
         org_name: values.org_name,
         description: values.description,
         org_owner: user,
+        location: values.location,
+        location_text: values.location_text,
       })
       .select("*")
       .single();
@@ -118,7 +132,48 @@ export default function CreateOrganization({
               </FormItem>
             )}
           />
-          <PlacesAutocomplete />
+          <FormField
+            control={form.control}
+            name="location"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Location (City)</FormLabel>
+                <FormControl>
+                  <div className="flex">
+                    <div className="w-full">
+                      <PlacesAutocomplete
+                        setSelectState={setLocationSelect}
+                        selectState={locationSelect}
+                        onAddressSelect={(address) => {
+                          getGeocode({ address: address }).then((results) => {
+                            const { lat, lng } = getLatLng(results[0]);
+                            setValue(
+                              "location",
+                              "POINT(" + lat + " " + lng + ")"
+                            );
+                            setValue("location_text", address);
+                            setLocationSelect(true);
+                          });
+                        }}
+                      />
+                    </div>
+                    {locationSelect && (
+                      <div className="m-2 ml-auto">
+                        <X
+                          onClick={() => {
+                            setValue("location", "");
+                            setValue("location_text", "");
+                            setLocationSelect(false);
+                          }}
+                        />
+                      </div>
+                    )}
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <section>
             {showError && (
               <p className="text-red-500 text-xs font-semibold">{error}</p>

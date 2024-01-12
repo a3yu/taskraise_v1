@@ -30,7 +30,8 @@ export default function RootLayout({
       <Script
         id="googlemaps"
         type="text/javascript"
-        strategy="lazyOnload"
+        defer
+        async
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBgfQSsBnEUn1pNp-XHatpzO-ttacH1E88&libraries=places"
       />
 

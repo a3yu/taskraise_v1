@@ -1,5 +1,4 @@
 "use client";
-
 import * as React from "react";
 import {
   ColumnDef,
@@ -41,10 +40,14 @@ import {
   AlertDialog,
   AlertDialogCancel,
   AlertDialogContent,
+  AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTrigger,
 } from "../ui/alert-dialog";
+import { useRouter, useSearchParams } from "next/navigation";
+import { RouterContext } from "next/dist/shared/lib/router-context.shared-runtime";
+import { useEffect } from "react";
 
 export const columns: ColumnDef<Tables<"orders">>[] = [
   {
@@ -89,6 +92,27 @@ export const columns: ColumnDef<Tables<"orders">>[] = [
       const date = new Date(
         row.original.created_at ? row.original.created_at : 0
       );
+      const router = useRouter();
+      async function onAccept() {
+        const { data, error } = await supabase
+          .from("orders")
+          .update({ status: "ONGOING" })
+          .eq("id", row.original.id);
+        setOpenAccept(false);
+        setShow(false);
+        router.push("/dashboard?update");
+      }
+      async function onReject() {
+        const { data, error } = await supabase
+          .from("orders")
+          .update({ status: "REJECTED" })
+          .eq("id", row.original.id);
+        setOpenReject(false);
+        setShow(false);
+        router.push("/dashboard?update");
+      }
+      const [openAccept, setOpenAccept] = React.useState(false);
+      const [openReject, setOpenReject] = React.useState(false);
       return (
         <div className="float-right">
           <AlertDialog open={show}>
@@ -115,12 +139,64 @@ export const columns: ColumnDef<Tables<"orders">>[] = [
               </div>
               <AlertDialogFooter className="mt-2">
                 <div className="mr-auto space-x-3">
-                  <Button className="bg-green-600 hover:bg-green-500">
-                    Accept
-                  </Button>
-                  <Button className="bg-red-600 hover:bg-red-500">
-                    Reject
-                  </Button>
+                  <AlertDialog open={openAccept}>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <h2 className="text-lg font-semibold text-gray-900">
+                          Are you sure you want to accept this order?
+                        </h2>
+                      </AlertDialogHeader>
+                      <AlertDialogDescription className="space-x-4 mt-4">
+                        <Button
+                          onClick={onAccept}
+                          className="hover:bg-green-400 bg-green-500"
+                        >
+                          Accept
+                        </Button>
+                        <Button
+                          variant={"secondary"}
+                          onClick={() => setOpenAccept(false)}
+                        >
+                          Cancel
+                        </Button>
+                      </AlertDialogDescription>
+                    </AlertDialogContent>
+                    <Button
+                      onClick={() => setOpenAccept(true)}
+                      className="hover:bg-green-400 bg-green-500"
+                    >
+                      Accept
+                    </Button>
+                  </AlertDialog>
+                  <AlertDialog open={openReject}>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <h2 className="text-lg font-semibold text-gray-900">
+                          Are you sure you want to reject this order?
+                        </h2>
+                      </AlertDialogHeader>
+                      <AlertDialogDescription className="space-x-4 mt-4">
+                        <Button
+                          onClick={onReject}
+                          className="hover:bg-red-400 bg-red-500"
+                        >
+                          Reject
+                        </Button>
+                        <Button
+                          variant={"secondary"}
+                          onClick={() => setOpenReject(false)}
+                        >
+                          Cancel
+                        </Button>
+                      </AlertDialogDescription>
+                    </AlertDialogContent>
+                    <Button
+                      onClick={() => setOpenReject(true)}
+                      className="hover:bg-red-400 bg-red-500"
+                    >
+                      Reject
+                    </Button>
+                  </AlertDialog>
                 </div>
                 <div className="float-right">
                   <Button onClick={() => setShow(false)}>Close</Button>
