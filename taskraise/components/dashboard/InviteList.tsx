@@ -41,19 +41,21 @@ export const columns: ColumnDef<Tables<"requests">>[] = [
   {
     accessorKey: "org_name",
     header: "Organization Name",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("org_name")}</div>
-    ),
+    cell: function Cell({ row }) {
+      <div className="capitalize">{row.getValue("org_name")}</div>;
+    },
   },
   {
     accessorKey: "inviter_name",
     header: "Invited By",
-    cell: ({ row }) => <div>{row.getValue("inviter_name")}</div>,
+    cell: function Cell({ row }) {
+      <div>{row.getValue("inviter_name")}</div>;
+    },
   },
   {
     accessorKey: "id",
     header: "",
-    cell: ({ row }) => {
+    cell: function Cell({ row }) {
       const router = useRouter();
       const [open, setOpen] = useState(false);
       async function onClick() {

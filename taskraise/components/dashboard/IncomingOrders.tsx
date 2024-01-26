@@ -53,7 +53,7 @@ export const columns: ColumnDef<Tables<"orders">>[] = [
   {
     accessorKey: "customer_username",
     header: () => <div className="">Customer</div>,
-    cell: ({ row }) => {
+    cell: function Cell({ row }) {
       return (
         <div className="lowercase font-bold">
           {row.getValue("customer_username")}
@@ -64,7 +64,7 @@ export const columns: ColumnDef<Tables<"orders">>[] = [
   {
     accessorKey: "price",
     header: () => <div className="">Price</div>,
-    cell: ({ row }) => {
+    cell: function Cell({ row }) {
       const amount = parseFloat(row.getValue("price"));
 
       // Format the amount as a dollar amount
@@ -79,7 +79,7 @@ export const columns: ColumnDef<Tables<"orders">>[] = [
   {
     accessorKey: "created_at",
     header: () => <div className="">Submitted</div>,
-    cell: ({ row }) => {
+    cell: function Cell({ row }) {
       const a = new Date(row.getValue("created_at"));
       return <div className=" font-medium">{a.toDateString()}</div>;
     },
@@ -87,7 +87,7 @@ export const columns: ColumnDef<Tables<"orders">>[] = [
   {
     accessorKey: "details",
     header: () => <div className=""></div>,
-    cell: ({ row }) => {
+    cell: function Cell({ row }) {
       const [show, setShow] = React.useState(false);
       const date = new Date(
         row.original.created_at ? row.original.created_at : 0
