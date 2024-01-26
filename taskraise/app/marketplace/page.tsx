@@ -4,6 +4,8 @@ import { Database } from "@/types/supabase";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
+import { supabaseServer } from "@/app/config/supabaseServerClient";
+
 import React from "react";
 
 async function MarketplaceMain({
@@ -13,11 +15,10 @@ async function MarketplaceMain({
   params: { slug: string };
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
-  const supabase = createServerComponentClient<Database>({ cookies });
   if (!("search" in searchParams)) {
     return <NoSearch />;
   } else {
-    const { data: tickets } = await supabase
+    const { data: tickets } = await supabaseServer
       .from("services")
       .select("*")
       .textSearch("title_description", searchParams.search as string)
