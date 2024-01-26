@@ -55,7 +55,7 @@ export default function SignInForm() {
       <section className="">
         <h1 className="text-3xl font-heading py-2">Sign in to your account</h1>
         <p className="text-sm text-muted-foreground">
-          Don't have an account?{" "}
+          Don&apos;t have an account?{" "}
           <Link href={"sign-up"} className="underline text-blue-600">
             Sign Up.
           </Link>
