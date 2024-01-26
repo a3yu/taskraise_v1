@@ -2,13 +2,11 @@ import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { Database } from "@/types/supabase";
-import { revalidatePath } from "next/cache";
+import { supabaseRoute } from "@/app/config/supabaseRouteHander";
 
 export async function GET(request: Request) {
-  const cookieStore = cookies();
-  const supabase = createRouteHandlerClient<Database>({
-    cookies: () => cookieStore,
-  });
+  const supabase = await supabaseRoute();
+
   const { error } = await supabase.auth.signOut();
 
   const redirectURL = `http://localhost:3000/redirect-home`;
