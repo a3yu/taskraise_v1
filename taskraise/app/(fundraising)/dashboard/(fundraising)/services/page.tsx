@@ -8,7 +8,7 @@ async function DashboardService({
   params: { slug: string };
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
-  return <Services update={"update" in searchParams} />;
+  return <Services />;
 }
 
 export default DashboardService;

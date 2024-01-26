@@ -58,8 +58,7 @@ export function ChangeService({
                   .from("services")
                   .update({ service_title: title })
                   .eq("id", rowService.original.id);
-
-                router.push("/dashboard/services?update");
+                dialogState(false);
               }}
             >
               Change
@@ -107,7 +106,7 @@ export function ChangeService({
                   .update({ service_description: description })
                   .eq("id", rowService.original.id);
 
-                router.push("/dashboard/services?update");
+                dialogState(false);
               }}
             >
               Change
@@ -157,7 +156,7 @@ export function ChangeService({
                   .update({ price: price })
                   .eq("id", rowService.original.id);
 
-                router.push("/dashboard/services?update");
+                dialogState(false);
               }}
             >
               Change
@@ -230,7 +229,7 @@ export function ChangeService({
                   })
                   .eq("id", rowService.original.id);
 
-                router.push("/dashboard/services?update");
+                dialogState(false);
               }}
             >
               Change

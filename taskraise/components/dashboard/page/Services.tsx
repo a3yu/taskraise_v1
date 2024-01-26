@@ -325,7 +325,7 @@ export const columns: ColumnDef<Tables<"services">>[] = [
   },
 ];
 
-export default function Services({ update }: { update: boolean }) {
+export default function Services() {
   const [submitted, setSubmitted] = useState(false);
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
