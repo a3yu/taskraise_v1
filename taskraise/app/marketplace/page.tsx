@@ -14,7 +14,10 @@ async function MarketplaceMain({
   params: { slug: string };
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
-  const supabase = createServerComponentClient<Database>({ cookies });
+  const cookieStore = cookies();
+  const supabase = createServerComponentClient<Database>({
+    cookies: () => cookieStore,
+  });
   if (!("search" in searchParams)) {
     return <NoSearch />;
   } else {

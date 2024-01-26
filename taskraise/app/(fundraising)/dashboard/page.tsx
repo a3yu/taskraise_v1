@@ -14,7 +14,10 @@ async function DashboardHome({
   params: { slug: string };
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
-  const supabase = createServerComponentClient<Database>({ cookies });
+  const cookieStore = cookies();
+  const supabase = createServerComponentClient<Database>({
+    cookies: () => cookieStore,
+  });
   const userResponse = await supabase.auth.getSession();
   const user = userResponse.data.session?.user;
   if ("update" in searchParams) {
