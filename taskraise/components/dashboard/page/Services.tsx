@@ -97,7 +97,9 @@ export default function Services() {
       setLoading(false);
     };
     setAllStates();
+    console.log(submitted);
     setSubmitted(false);
+    console.log(submitted);
   }, [submitted]);
   const columns: ColumnDef<Tables<"services">>[] = [
     {
