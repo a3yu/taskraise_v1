@@ -8,7 +8,10 @@ import { cookies } from "next/headers";
 import { Database } from "@/types/supabase";
 
 async function NavigationBar() {
-  const supabase = createServerComponentClient<Database>({ cookies });
+  const cookieStore = cookies();
+  const supabase = createServerComponentClient<Database>({
+    cookies: () => cookieStore,
+  });
   const {
     data: { user },
   } = await supabase.auth.getUser();
