@@ -257,8 +257,7 @@ export const columns: ColumnDef<Tables<"services">>[] = [
                       .single();
                     if (!error) {
                       setShowDelete(false);
-                      router.refresh();
-                      router.push("/dashboard/services?update");
+                      router.replace("/dashboard/services?update");
                     }
                   }}
                 >
@@ -325,7 +324,11 @@ export const columns: ColumnDef<Tables<"services">>[] = [
   },
 ];
 
-export default function Services() {
+export default function Services({
+  services,
+}: {
+  services: Tables<"services">[];
+}) {
   const [submitted, setSubmitted] = useState(false);
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -337,36 +340,9 @@ export default function Services() {
   const [user, setUser] = useState<User | null>(null);
   const [show, setShow] = useState(false);
   const [dataFetch, setData] = useState<Tables<"profiles"> | null>(null);
-  const [data, setServices] = useState<Tables<"services">[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [data, setServices] = useState<Tables<"services">[]>(services);
+
   const router = useRouter();
-
-  useEffect(() => {
-    const setAllStates = async () => {
-      const userResponse = await supabase.auth.getSession();
-      const user = userResponse.data.session?.user;
-      if (user) setUser(user);
-      else {
-        router.push("/");
-      }
-
-      const userProfile = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", user?.id)
-        .single();
-      setData(userProfile.data);
-
-      const { data } = await supabase
-        .from("services")
-        .select("*")
-        .eq("organization", userProfile.data.organization);
-      setServices(data as Tables<"services">[]);
-      setLoading(false);
-    };
-    setAllStates();
-    setSubmitted(false);
-  }, [submitted]);
 
   const table = useReactTable({
     data,
@@ -386,13 +362,6 @@ export default function Services() {
       rowSelection,
     },
   });
-  if (loading) {
-    return (
-      <div className="px-16 py-7">
-        <h1>Loading...</h1>
-      </div>
-    );
-  }
 
   return (
     <div className="w-full px-16 py-7">
