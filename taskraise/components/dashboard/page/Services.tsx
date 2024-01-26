@@ -282,7 +282,11 @@ export default function Services() {
                 <AlertDialogHeader>
                   <h1 className="font-bold text-2xl">Service Information</h1>
                 </AlertDialogHeader>
-                <ChangeService dialogState={setShowDetails} rowService={row} />
+                <ChangeService
+                  dialogState={setShowDetails}
+                  rowService={row}
+                  submitted={setSubmitted}
+                />
               </AlertDialogContent>
             </AlertDialog>
             <AlertDialog open={showDelete}>
