@@ -64,9 +64,11 @@ const formSchema = z.object({
 export function CreateService({
   dialogState,
   orgId,
+  submitted,
 }: {
   dialogState: Dispatch<SetStateAction<boolean>>;
   orgId: string;
+  submitted: Dispatch<SetStateAction<boolean>>;
 }) {
   console.log(orgId);
   const form = useForm<z.infer<typeof formSchema>>({
@@ -112,6 +114,7 @@ export function CreateService({
       });
       router.push("/dashboard/services?update");
       dialogState(false);
+      submitted(true);
       if (error) {
         alert(error);
       }
@@ -128,6 +131,7 @@ export function CreateService({
       });
       router.push("/dashboard/services?update");
       dialogState(false);
+      submitted(true);
       if (error) {
         alert(error);
       }

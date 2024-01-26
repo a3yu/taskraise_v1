@@ -326,7 +326,7 @@ export const columns: ColumnDef<Tables<"services">>[] = [
 ];
 
 export default function Services({ update }: { update: boolean }) {
-  const [file, setFile] = useState<File | null>(null);
+  const [submitted, setSubmitted] = useState(false);
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -340,7 +340,6 @@ export default function Services({ update }: { update: boolean }) {
   const [data, setServices] = useState<Tables<"services">[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
-  console.log(update);
 
   useEffect(() => {
     const setAllStates = async () => {
@@ -366,8 +365,8 @@ export default function Services({ update }: { update: boolean }) {
       setLoading(false);
     };
     setAllStates();
-    router.replace("/dashboard/services");
-  }, [update]);
+    setSubmitted(false);
+  }, [submitted]);
 
   const table = useReactTable({
     data,
@@ -418,6 +417,7 @@ export default function Services({ update }: { update: boolean }) {
                 </h2>
               </AlertDialogHeader>
               <CreateService
+                submitted={setSubmitted}
                 dialogState={setShow}
                 orgId={
                   dataFetch?.organization
