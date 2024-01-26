@@ -61,7 +61,7 @@ export const columns: ColumnDef<Tables<"services">>[] = [
   {
     accessorKey: "thumbnail_path",
     header: () => <div className=""></div>,
-    cell: ({ row }) => {
+    cell: function Cell({ row }) {
       const [thumbnail, setThumbnail] = useState("");
       useEffect(() => {
         async function downloadImage(path: string) {
@@ -98,7 +98,7 @@ export const columns: ColumnDef<Tables<"services">>[] = [
   {
     accessorKey: "service_title",
     header: () => <div className="">Title</div>,
-    cell: ({ row }) => {
+    cell: function Cell({ row }) {
       return (
         <div className="font-bold text-md">{row.getValue("service_title")}</div>
       );
@@ -107,7 +107,7 @@ export const columns: ColumnDef<Tables<"services">>[] = [
   {
     accessorKey: "location_text",
     header: () => <div className="">Delivery Method/Location</div>,
-    cell: ({ row }) => {
+    cell: function Cell({ row }) {
       if (row.getValue("location_text")) {
         return <div>{row.getValue("location_text")}</div>;
       } else {
@@ -118,7 +118,7 @@ export const columns: ColumnDef<Tables<"services">>[] = [
   {
     accessorKey: "price",
     header: () => <div className="">Price</div>,
-    cell: ({ row }) => {
+    cell: function Cell({ row }) {
       const amount = parseFloat(row.getValue("price"));
 
       // Format the amount as a dollar amount
@@ -133,7 +133,7 @@ export const columns: ColumnDef<Tables<"services">>[] = [
   {
     accessorKey: "details",
     header: () => <div className=""></div>,
-    cell: ({ row }) => {
+    cell: function Cell({ row }) {
       const [showDetails, setShowDetails] = React.useState(false);
       const [showDelete, setShowDelete] = useState(false);
       const [showChange, setShowChange] = useState(false);
