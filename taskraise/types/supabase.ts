@@ -226,35 +226,46 @@ export interface Database {
       services: {
         Row: {
           created_at: string
-          delivery_type: Database["public"]["Enums"]["delivery_method"][] | null
+          delivery_type: Database["public"]["Enums"]["delivery_method"] | null
           id: number
+          location: unknown | null
+          location_text: string
+          organization: number
+          price: number
           service_description: string
           service_title: string
+          thumbnail_path: string
         }
         Insert: {
           created_at?: string
-          delivery_type?:
-            | Database["public"]["Enums"]["delivery_method"][]
-            | null
+          delivery_type?: Database["public"]["Enums"]["delivery_method"] | null
           id?: number
+          location?: unknown | null
+          location_text: string
+          organization: number
+          price: number
           service_description: string
           service_title: string
+          thumbnail_path: string
         }
         Update: {
           created_at?: string
-          delivery_type?:
-            | Database["public"]["Enums"]["delivery_method"][]
-            | null
+          delivery_type?: Database["public"]["Enums"]["delivery_method"] | null
           id?: number
+          location?: unknown | null
+          location_text?: string
+          organization?: number
+          price?: number
           service_description?: string
           service_title?: string
+          thumbnail_path?: string
         }
         Relationships: [
           {
-            foreignKeyName: "services_id_fkey"
-            columns: ["id"]
-            isOneToOne: true
-            referencedRelation: "orders"
+            foreignKeyName: "services_organization_fkey"
+            columns: ["organization"]
+            isOneToOne: false
+            referencedRelation: "organizations"
             referencedColumns: ["id"]
           }
         ]
