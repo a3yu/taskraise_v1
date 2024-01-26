@@ -325,9 +325,8 @@ export const columns: ColumnDef<Tables<"services">>[] = [
   },
 ];
 
-export default function Services() {
+export default function Services({ update }: { update: boolean }) {
   const [file, setFile] = useState<File | null>(null);
-  const [filePath, setFilePath] = useState("");
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -341,6 +340,7 @@ export default function Services() {
   const [data, setServices] = useState<Tables<"services">[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  console.log(update);
 
   useEffect(() => {
     const setAllStates = async () => {
@@ -366,7 +366,8 @@ export default function Services() {
       setLoading(false);
     };
     setAllStates();
-  }, []);
+    router.replace("/dashboard/services");
+  }, [update]);
 
   const table = useReactTable({
     data,
