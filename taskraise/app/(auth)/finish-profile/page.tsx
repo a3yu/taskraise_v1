@@ -25,7 +25,7 @@ import { Input } from "@/components/ui/input";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { supabase } from "@/app/config/supabaseClient";
-import { Tables } from "@/typesDatabase";
+import { Tables } from "@/types/supabase";
 import Loader from "react-loader-spinner";
 import { useRouter } from "next/navigation";
 
