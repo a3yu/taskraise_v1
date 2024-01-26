@@ -56,6 +56,7 @@ import { CreateService } from "@/components/dashboard/CreateService";
 import Image from "next/image";
 import { ChangeService } from "@/components/dashboard/ChangeService";
 import { AlertDescription } from "@/components/ui/alert";
+import Router from "next/router";
 export const columns: ColumnDef<Tables<"services">>[] = [
   {
     accessorKey: "thumbnail_path",
@@ -195,7 +196,6 @@ export const columns: ColumnDef<Tables<"services">>[] = [
           setUploading(false);
         }
       }, [file]);
-      const router = useRouter();
       return (
         <div className="">
           <DropdownMenu>
@@ -256,7 +256,10 @@ export const columns: ColumnDef<Tables<"services">>[] = [
                       .single();
                     if (!error) {
                       setShowDelete(false);
-                      router.push("/dashboard/services?update");
+                      Router.push({
+                        pathname: "/dashboard/services",
+                        query: { name: "update" },
+                      });
                     }
                   }}
                 >
