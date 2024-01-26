@@ -1,3 +1,4 @@
+"use server";
 import Services from "@/components/dashboard/page/Services";
 import { redirect } from "next/navigation";
 
