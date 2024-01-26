@@ -15,3 +15,5 @@ export async function GET(request: Request) {
 
   return NextResponse.redirect(redirectURL);
 }
+
+export const dynamic = "force-dynamic";
