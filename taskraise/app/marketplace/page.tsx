@@ -1,3 +1,4 @@
+"use server";
 import Marketplace from "@/components/marketplace/page/Marketplace";
 import NoSearch from "@/components/marketplace/page/NoSearch";
 import { Database } from "@/types/supabase";
