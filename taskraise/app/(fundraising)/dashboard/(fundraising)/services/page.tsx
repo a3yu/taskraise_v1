@@ -8,7 +8,7 @@ async function DashboardService({
   params: { slug: string };
   searchParams: { [key: string]: string | string[] | undefined };
 }) {
-  if ("update" in params) {
+  if ("update" in searchParams) {
     redirect("/dashboard/services");
   }
   return <Services />;

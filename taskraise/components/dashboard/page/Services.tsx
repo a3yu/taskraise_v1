@@ -56,7 +56,7 @@ import { CreateService } from "@/components/dashboard/CreateService";
 import Image from "next/image";
 import { ChangeService } from "@/components/dashboard/ChangeService";
 import { AlertDescription } from "@/components/ui/alert";
-import Router from "next/router";
+
 export const columns: ColumnDef<Tables<"services">>[] = [
   {
     accessorKey: "thumbnail_path",
@@ -143,6 +143,7 @@ export const columns: ColumnDef<Tables<"services">>[] = [
       const [uid, setUid] = useState("");
       const [showPreview, setShowPreview] = useState(false);
       const [preview, setPreview] = useState<string | null>(null);
+      const router = useRouter();
       const uploadThumbnail: React.ChangeEventHandler<
         HTMLInputElement
       > = async (event) => {
@@ -256,10 +257,8 @@ export const columns: ColumnDef<Tables<"services">>[] = [
                       .single();
                     if (!error) {
                       setShowDelete(false);
-                      Router.push({
-                        pathname: "/dashboard/services",
-                        query: { name: "update" },
-                      });
+                      router.refresh();
+                      router.push("/dashboard/services?update");
                     }
                   }}
                 >
