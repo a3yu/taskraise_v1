@@ -14,11 +14,9 @@ import { useRouter } from "next/navigation";
 export function ChangeService({
   rowService,
   dialogState,
-  submitted,
 }: {
   rowService: CoreRow<Tables<"services">>;
   dialogState: Dispatch<SetStateAction<boolean>>;
-  submitted: Dispatch<SetStateAction<boolean>>;
 }) {
   const [editTitle, setEditTitle] = useState(false);
   const [title, setTitle] = useState("");
@@ -107,7 +105,7 @@ export function ChangeService({
                   .from("services")
                   .update({ service_description: description })
                   .eq("id", rowService.original.id);
-                submitted(true);
+
                 dialogState(false);
               }}
             >
@@ -158,7 +156,6 @@ export function ChangeService({
                   .update({ price: price })
                   .eq("id", rowService.original.id);
 
-                submitted(true);
                 dialogState(false);
               }}
             >
@@ -231,7 +228,7 @@ export function ChangeService({
                     location_text: locationText,
                   })
                   .eq("id", rowService.original.id);
-                submitted(true);
+
                 dialogState(false);
               }}
             >
