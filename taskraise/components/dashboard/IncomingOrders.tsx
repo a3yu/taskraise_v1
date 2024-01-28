@@ -35,6 +35,7 @@ import {
   AlertDialogTrigger,
 } from "../ui/alert-dialog";
 import { useRouter, useSearchParams } from "next/navigation";
+import { acceptOrder } from "@/lib/server/orderActions";
 
 export const columns: ColumnDef<Tables<"orders">>[] = [
   {
@@ -79,19 +80,11 @@ export const columns: ColumnDef<Tables<"orders">>[] = [
       );
       const router = useRouter();
       async function onAccept() {
-        "use server";
-        const { data, error } = await supabase
-          .from("orders")
-          .update({ status: "ONGOING" })
-          .eq("id", row.original.id);
+        await acceptOrder(row.original.id);
         setOpenAccept(false);
         setShow(false);
-        if (!error) {
-          router.replace("/dashboard?update");
-        }
       }
       async function onReject() {
-        "use server";
         const { data, error } = await supabase
           .from("orders")
           .update({ status: "REJECTED" })
