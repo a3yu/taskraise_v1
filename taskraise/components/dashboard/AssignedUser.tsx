@@ -17,23 +17,28 @@ import { Button } from "../ui/button";
 
 function AssignedUser({
   orgData,
-  orgOrders,
+  orgOrdersOngoing,
+  orgOrdersIncoming,
+  orgOrdersFinished,
   orgUsers,
 }: {
   orgData: Tables<"organizations">;
-  orgOrders: Tables<"orders">[];
+  orgOrdersOngoing: Tables<"orders">[];
+  orgOrdersIncoming: Tables<"orders">[];
+  orgOrdersFinished: Tables<"orders">[];
   orgUsers: Tables<"profiles">[];
 }) {
+  const [orgOrdersOngoingState, setOrgOrdersOngoingState] =
+    useState<Tables<"orders">[]>(orgOrdersOngoing);
+  const [orgOrdersIncomingState, setOrgOrdersIncomingState] =
+    useState<Tables<"orders">[]>(orgOrdersIncoming);
+  const [orgOrdersFinishedState, setOrgOrdersFinishedState] =
+    useState<Tables<"orders">[]>(orgOrdersFinished);
   let totalPrice = 0;
-  let ongoingTasks = 0;
-  let completedTasks = 0;
-  orgOrders.forEach((order) => {
-    if (order.status === "COMPLETED") {
-      totalPrice += order.price;
-      completedTasks++;
-    } else if (order.status === "ONGOING") {
-      ongoingTasks++;
-    }
+  const ongoingTasks = orgOrdersOngoing.length;
+  const completedTasks = orgOrdersFinishedState.length;
+  orgOrdersIncoming.forEach((order) => {
+    totalPrice += order.price;
   });
   const formatted = new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -146,7 +151,7 @@ function AssignedUser({
                 <CardTitle>Incoming Orders</CardTitle>
               </CardHeader>
               <CardContent>
-                <IncomingOrders orgOrders={orgOrders} />
+                <IncomingOrders orgOrders={orgOrdersIncomingState} />
               </CardContent>
             </Card>
             <Card className="col-span-3 p-2">
@@ -154,7 +159,7 @@ function AssignedUser({
                 <CardTitle>Ongoing Orders</CardTitle>
               </CardHeader>
               <CardContent>
-                <OngoingOrders orgOrders={orgOrders} />
+                <OngoingOrders orgOrders={orgOrdersOngoingState} />
               </CardContent>
             </Card>
           </div>

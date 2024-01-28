@@ -12,19 +12,8 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -219,14 +208,7 @@ export function IncomingOrders({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
-  const [data, setData] = React.useState<Tables<"orders">[]>([]);
-  React.useEffect(() => {
-    const orgOrdersRequest = orgOrders.filter((order) => {
-      return order.status === "REQUESTED";
-    });
-
-    setData(orgOrdersRequest);
-  }, []);
+  const [data, setData] = React.useState<Tables<"orders">[]>(orgOrders);
 
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});

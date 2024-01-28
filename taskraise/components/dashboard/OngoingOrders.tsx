@@ -112,15 +112,7 @@ export function OngoingOrders({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
-  const [data, setData] = React.useState<Tables<"orders">[]>([]);
-  React.useEffect(() => {
-    const orgOrdersRequest = orgOrders.filter((order) => {
-      return order.status === "ONGOING";
-    });
-
-    setData(orgOrdersRequest);
-  }, []);
-
+  const [data, setData] = React.useState<Tables<"orders">[]>(orgOrders);
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});

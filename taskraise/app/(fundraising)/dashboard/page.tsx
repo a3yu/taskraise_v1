@@ -22,7 +22,6 @@ async function DashboardHome({
   if ("update" in searchParams) {
     redirect("/dashboard");
   }
-
   if (!user) {
     redirect("/");
   }
@@ -51,9 +50,20 @@ async function DashboardHome({
         .select("*")
         .eq("org_id", orgData.data.id);
       if (orgUsers.data && orgOrders.data) {
+        const orgOrdersIncoming = orgOrders.data.filter((order) => {
+          return order.status === "REQUESTED";
+        });
+        const orgOrdersOngoing = orgOrders.data.filter((order) => {
+          return order.status === "ONGOING";
+        });
+        const orgOrdersFinished = orgOrders.data.filter((order) => {
+          return order.status === "COMPLETED";
+        });
         return (
           <AssignedUser
-            orgOrders={orgOrders.data}
+            orgOrdersIncoming={orgOrdersIncoming ? orgOrdersIncoming : []}
+            orgOrdersOngoing={orgOrdersOngoing ? orgOrdersOngoing : []}
+            orgOrdersFinished={orgOrdersFinished ? orgOrdersFinished : []}
             orgData={orgData.data}
             orgUsers={orgUsers.data}
           />
