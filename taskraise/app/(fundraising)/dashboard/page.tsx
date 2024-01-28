@@ -19,9 +19,9 @@ async function DashboardHome({
   });
   const userResponse = await supabase.auth.getSession();
   const user = userResponse.data.session?.user;
-  // if ("update" in searchParams) {
-  //   redirect("/dashboard");
-  // }
+  if ("update" in searchParams) {
+    redirect("/dashboard");
+  }
 
   if (!user) {
     redirect("/");
