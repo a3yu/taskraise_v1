@@ -49,6 +49,7 @@ async function DashboardHome({
         .select("*")
         .eq("org_id", orgData.data.id);
       if (orgUsers.data && orgOrders.data) {
+        console.log(orgOrders.data);
         const orgOrdersIncoming = orgOrders.data.filter((order) => {
           return order.status === "REQUESTED";
         });
@@ -73,5 +74,5 @@ async function DashboardHome({
     return <NonAssignedUser userData={userData.data} />;
   }
 }
-const dynamic = "force-dynamic";
+
 export default DashboardHome;
