@@ -5,7 +5,6 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import NonAssignedUser from "@/components/dashboard/NonAssignedUser";
 import AssignedUser from "@/components/dashboard/AssignedUser";
-
 async function DashboardHome({
   params,
   searchParams,
@@ -74,5 +73,5 @@ async function DashboardHome({
     return <NonAssignedUser userData={userData.data} />;
   }
 }
-
+const dynamic = "force-dynamic";
 export default DashboardHome;
