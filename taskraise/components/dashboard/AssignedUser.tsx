@@ -32,6 +32,7 @@ function AssignedUser({
     useState<Tables<"orders">[]>(orgOrdersOngoing);
   const [orgOrdersIncomingState, setOrgOrdersIncomingState] =
     useState<Tables<"orders">[]>(orgOrdersIncoming);
+  console.log(orgOrdersIncoming);
   const [orgOrdersFinishedState, setOrgOrdersFinishedState] =
     useState<Tables<"orders">[]>(orgOrdersFinished);
   let totalPrice = 0;
