@@ -30,7 +30,6 @@ async function DashboardService({
         .from("services")
         .select("*")
         .eq("organization", userProfile.data?.organization);
-      console.log(data);
       return <Services services={data ? data : []} />;
     }
   }

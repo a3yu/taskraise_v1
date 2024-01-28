@@ -51,7 +51,7 @@ async function DashboardHome({
         .from("orders")
         .select("*")
         .eq("org_id", orgData.data.id);
-      console.log(orgOrders);
+
       if (orgUsers.data && orgOrders.data) {
         return (
           <AssignedUser

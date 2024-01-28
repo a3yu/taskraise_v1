@@ -14,13 +14,6 @@ import { IncomingOrders } from "./IncomingOrders";
 import { OngoingOrders } from "./OngoingOrders";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "../ui/button";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel";
 
 function AssignedUser({
   orgData,
@@ -31,19 +24,6 @@ function AssignedUser({
   orgOrders: Tables<"orders">[];
   orgUsers: Tables<"profiles">[];
 }) {
-  const [update, setUpdate] = useState(false);
-  const searchParams = useSearchParams();
-  const search = searchParams.get("update");
-  const router = useRouter();
-  useEffect(() => {
-    if (search) {
-      setUpdate(true);
-      router.push("/dashboard");
-    } else {
-      setUpdate(false);
-    }
-  }, []);
-
   let totalPrice = 0;
   let ongoingTasks = 0;
   let completedTasks = 0;

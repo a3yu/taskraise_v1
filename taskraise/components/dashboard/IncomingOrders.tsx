@@ -46,8 +46,6 @@ import {
   AlertDialogTrigger,
 } from "../ui/alert-dialog";
 import { useRouter, useSearchParams } from "next/navigation";
-import { RouterContext } from "next/dist/shared/lib/router-context.shared-runtime";
-import { useEffect } from "react";
 
 export const columns: ColumnDef<Tables<"orders">>[] = [
   {
@@ -66,8 +64,6 @@ export const columns: ColumnDef<Tables<"orders">>[] = [
     header: () => <div className="">Price</div>,
     cell: function Cell({ row }) {
       const amount = parseFloat(row.getValue("price"));
-
-      // Format the amount as a dollar amount
       const formatted = new Intl.NumberFormat("en-US", {
         style: "currency",
         currency: "USD",
