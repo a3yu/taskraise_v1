@@ -5,7 +5,6 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import NonAssignedUser from "@/components/dashboard/NonAssignedUser";
 import AssignedUser from "@/components/dashboard/AssignedUser";
-import { NextRequest } from "next/server";
 
 async function DashboardHome({
   params,
@@ -20,9 +19,9 @@ async function DashboardHome({
   });
   const userResponse = await supabase.auth.getSession();
   const user = userResponse.data.session?.user;
-  if ("update" in searchParams) {
-    redirect("/dashboard");
-  }
+  // if ("update" in searchParams) {
+  //   redirect("/dashboard");
+  // }
 
   if (!user) {
     redirect("/");
@@ -51,7 +50,6 @@ async function DashboardHome({
         .from("orders")
         .select("*")
         .eq("org_id", orgData.data.id);
-
       if (orgUsers.data && orgOrders.data) {
         return (
           <AssignedUser
