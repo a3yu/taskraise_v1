@@ -96,7 +96,7 @@ export const columns: ColumnDef<Tables<"orders">>[] = [
           .eq("id", row.original.id);
         setOpenAccept(false);
         setShow(false);
-        router.push("/dashboard?update");
+        router.replace("/dashboard?update");
       }
       async function onReject() {
         const { data, error } = await supabase
@@ -105,7 +105,7 @@ export const columns: ColumnDef<Tables<"orders">>[] = [
           .eq("id", row.original.id);
         setOpenReject(false);
         setShow(false);
-        router.push("/dashboard?update");
+        router.replace("/dashboard?update");
       }
       const [openAccept, setOpenAccept] = React.useState(false);
       const [openReject, setOpenReject] = React.useState(false);
