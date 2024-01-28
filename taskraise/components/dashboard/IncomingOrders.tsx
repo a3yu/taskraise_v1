@@ -36,6 +36,9 @@ import {
 } from "../ui/alert-dialog";
 import { useRouter, useSearchParams } from "next/navigation";
 import { acceptOrder } from "@/lib/server/orderActions";
+import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
+import { Database } from "@/types/supabase";
+import { cookies } from "next/headers";
 
 export const columns: ColumnDef<Tables<"orders">>[] = [
   {
