@@ -1,3 +1,4 @@
+"use server";
 import Services from "@/components/dashboard/page/Services";
 import { Database } from "@/types/supabase";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";

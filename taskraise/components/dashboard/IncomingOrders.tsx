@@ -79,6 +79,7 @@ export const columns: ColumnDef<Tables<"orders">>[] = [
       );
       const router = useRouter();
       async function onAccept() {
+        "use server";
         const { data, error } = await supabase
           .from("orders")
           .update({ status: "ONGOING" })
@@ -90,6 +91,7 @@ export const columns: ColumnDef<Tables<"orders">>[] = [
         }
       }
       async function onReject() {
+        "use server";
         const { data, error } = await supabase
           .from("orders")
           .update({ status: "REJECTED" })
