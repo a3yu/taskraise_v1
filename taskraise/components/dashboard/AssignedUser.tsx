@@ -28,16 +28,9 @@ function AssignedUser({
   orgOrdersFinished: Tables<"orders">[];
   orgUsers: Tables<"profiles">[];
 }) {
-  const [orgOrdersOngoingState, setOrgOrdersOngoingState] =
-    useState<Tables<"orders">[]>(orgOrdersOngoing);
-  const [orgOrdersIncomingState, setOrgOrdersIncomingState] =
-    useState<Tables<"orders">[]>(orgOrdersIncoming);
-  console.log(orgOrdersIncoming);
-  const [orgOrdersFinishedState, setOrgOrdersFinishedState] =
-    useState<Tables<"orders">[]>(orgOrdersFinished);
   let totalPrice = 0;
   const ongoingTasks = orgOrdersOngoing.length;
-  const completedTasks = orgOrdersFinishedState.length;
+  const completedTasks = orgOrdersFinished.length;
   orgOrdersIncoming.forEach((order) => {
     totalPrice += order.price;
   });
@@ -152,7 +145,7 @@ function AssignedUser({
                 <CardTitle>Incoming Orders</CardTitle>
               </CardHeader>
               <CardContent>
-                <IncomingOrders orgOrders={orgOrdersIncomingState} />
+                <IncomingOrders orgOrders={orgOrdersIncoming} />
               </CardContent>
             </Card>
             <Card className="col-span-3 p-2">
@@ -160,7 +153,7 @@ function AssignedUser({
                 <CardTitle>Ongoing Orders</CardTitle>
               </CardHeader>
               <CardContent>
-                <OngoingOrders orgOrders={orgOrdersOngoingState} />
+                <OngoingOrders orgOrders={orgOrdersOngoing} />
               </CardContent>
             </Card>
           </div>

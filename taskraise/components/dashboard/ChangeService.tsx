@@ -4,7 +4,12 @@ import { Dispatch, SetStateAction, useState } from "react";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Textarea } from "../ui/textarea";
-import Link from "next/link";
+import {
+  changeServiceCost,
+  changeServiceDescription,
+  changeServiceLocation,
+  changeServiceTitle,
+} from "@/lib/server/serviceActions";
 import { PlacesAutocomplete } from "./PlacesAutocomplete";
 import { getGeocode, getLatLng } from "use-places-autocomplete";
 import { X } from "lucide-react";
@@ -54,10 +59,7 @@ export function ChangeService({
             <Button
               className="mr-1"
               onClick={async () => {
-                const updateTitle = await supabase
-                  .from("services")
-                  .update({ service_title: title })
-                  .eq("id", rowService.original.id);
+                await changeServiceTitle(rowService.original.id, title);
                 dialogState(false);
               }}
             >
@@ -101,11 +103,10 @@ export function ChangeService({
             <Button
               className="mr-1 mb-2"
               onClick={async () => {
-                const updateDescription = await supabase
-                  .from("services")
-                  .update({ service_description: description })
-                  .eq("id", rowService.original.id);
-
+                await changeServiceDescription(
+                  rowService.original.id,
+                  description
+                );
                 dialogState(false);
               }}
             >
@@ -151,10 +152,10 @@ export function ChangeService({
             <Button
               className="mr-1"
               onClick={async () => {
-                const updateDescription = await supabase
-                  .from("services")
-                  .update({ price: price })
-                  .eq("id", rowService.original.id);
+                await changeServiceCost(
+                  rowService.original.id,
+                  parseFloat(price)
+                );
 
                 dialogState(false);
               }}
@@ -228,6 +229,11 @@ export function ChangeService({
                     location_text: locationText,
                   })
                   .eq("id", rowService.original.id);
+                await changeServiceLocation(
+                  rowService.original.id,
+                  locationValue,
+                  locationText
+                );
 
                 dialogState(false);
               }}
