@@ -21,7 +21,7 @@ export async function changeServiceLocation(
       location_text: locationText ? locationText : "",
     })
     .eq("id", id);
-  redirect("/dashboard?update");
+  redirect("/dashboard/services?update");
 }
 
 export async function changeServiceTitle(id: number, title: string) {
@@ -35,7 +35,7 @@ export async function changeServiceTitle(id: number, title: string) {
       service_title: title,
     })
     .eq("id", id);
-  redirect("/dashboard?update");
+  redirect("/dashboard/services?update");
 }
 
 export async function changeServiceDescription(
@@ -52,7 +52,7 @@ export async function changeServiceDescription(
       service_description: description,
     })
     .eq("id", id);
-  redirect("/dashboard?update");
+  redirect("/dashboard/services?update");
 }
 
 export async function changeServiceCost(id: number, cost: number) {
@@ -66,5 +66,14 @@ export async function changeServiceCost(id: number, cost: number) {
       price: cost,
     })
     .eq("id", id);
-  redirect("/dashboard?update");
+  redirect("/dashboard/services?update");
+}
+
+export async function deleteService(id: number) {
+  const cookieStore = cookies();
+  const supabase = createServerComponentClient<Database>({
+    cookies: () => cookieStore,
+  });
+  await supabase.from("services").delete().eq("id", id).single();
+  redirect("/dashboard/service?update");
 }

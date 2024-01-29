@@ -49,6 +49,7 @@ import { CreateService } from "@/components/dashboard/CreateService";
 import Image from "next/image";
 import { ChangeService } from "@/components/dashboard/ChangeService";
 import { AlertDescription } from "@/components/ui/alert";
+import { deleteService } from "@/lib/server/serviceActions";
 
 export const columns: ColumnDef<Tables<"services">>[] = [
   {
@@ -241,15 +242,7 @@ export const columns: ColumnDef<Tables<"services">>[] = [
                 <Button
                   className="bg-red-500 hover:bg-red-400"
                   onClick={async () => {
-                    const { error } = await supabase
-                      .from("services")
-                      .delete()
-                      .eq("id", row.original.id)
-                      .single();
-                    if (!error) {
-                      setShowDelete(false);
-                      router.replace("/dashboard/services?update");
-                    }
+                    await deleteService(row.original.id);
                   }}
                 >
                   Confirm
