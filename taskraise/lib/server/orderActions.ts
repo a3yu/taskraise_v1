@@ -15,7 +15,7 @@ export async function acceptOrder(id: number) {
     .update({ status: "ONGOING" })
     .eq("id", id);
   console.log(id);
-  redirect("/dashboard");
+  redirect("/dashboard?update");
 }
 
 export async function rejectOrder(id: number) {
