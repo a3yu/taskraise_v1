@@ -15,5 +15,18 @@ export async function acceptOrder(id: number) {
     .update({ status: "ONGOING" })
     .eq("id", id);
   console.log(id);
+  redirect("/dashboard");
+}
+
+export async function rejectOrder(id: number) {
+  const cookieStore = cookies();
+  const supabase = createServerComponentClient<Database>({
+    cookies: () => cookieStore,
+  });
+  const { data, error } = await supabase
+    .from("orders")
+    .update({ status: "ONGOING" })
+    .eq("id", id);
+  console.log(id);
   redirect("/dashboard?update");
 }

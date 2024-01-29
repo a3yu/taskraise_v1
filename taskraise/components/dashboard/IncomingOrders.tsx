@@ -35,10 +35,7 @@ import {
   AlertDialogTrigger,
 } from "../ui/alert-dialog";
 import { useRouter, useSearchParams } from "next/navigation";
-import { acceptOrder } from "@/lib/server/orderActions";
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
-import { Database } from "@/types/supabase";
-import { cookies } from "next/headers";
+import { acceptOrder, rejectOrder } from "@/lib/server/orderActions";
 
 export const columns: ColumnDef<Tables<"orders">>[] = [
   {
@@ -88,15 +85,9 @@ export const columns: ColumnDef<Tables<"orders">>[] = [
         setShow(false);
       }
       async function onReject() {
-        const { data, error } = await supabase
-          .from("orders")
-          .update({ status: "REJECTED" })
-          .eq("id", row.original.id);
+        await rejectOrder(row.original.id);
         setOpenReject(false);
         setShow(false);
-        if (!error) {
-          router.replace("/dashboard?update");
-        }
       }
       const [openAccept, setOpenAccept] = React.useState(false);
       const [openReject, setOpenReject] = React.useState(false);
