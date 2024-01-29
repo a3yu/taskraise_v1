@@ -75,5 +75,5 @@ export async function deleteService(id: number) {
     cookies: () => cookieStore,
   });
   await supabase.from("services").delete().eq("id", id).single();
-  redirect("/dashboard/service?update");
+  redirect("/dashboard/services?update");
 }

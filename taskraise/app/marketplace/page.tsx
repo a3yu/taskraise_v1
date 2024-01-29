@@ -24,7 +24,10 @@ async function MarketplaceMain({
     const { data: tickets } = await supabase
       .from("services")
       .select("*")
-      .textSearch("title_description", searchParams.search as string)
+      .textSearch("title_description", searchParams.search as string, {
+        type: "websearch",
+        config: "english",
+      })
       .limit(10);
     return (
       <Marketplace
