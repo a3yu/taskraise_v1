@@ -9,7 +9,7 @@ import { Database } from "@/types/supabase";
 
 async function NavigationBar() {
   const cookieStore = cookies();
-  const supabase = createServerComponentClient<Database>({
+  const supabase = createServerComponentClient< Database>({
     cookies: () => cookieStore,
   });
   const {

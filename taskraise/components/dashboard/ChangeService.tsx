@@ -173,11 +173,7 @@ export function ChangeService({
           </div>
         ) : (
           <div className="mb-2">
-            <p>
-              {rowService.original.location_text == ""
-                ? "REMOTE"
-                : getDollar(rowService.original.price)}
-            </p>
+            <p>{getDollar(rowService.original.price)}</p>
             <p
               className="text-primary hover:underline hover:cursor-pointer text-sm"
               onClick={() => {
@@ -200,7 +196,8 @@ export function ChangeService({
                 onAddressSelect={(address) => {
                   getGeocode({ address: address }).then((results) => {
                     const { lat, lng } = getLatLng(results[0]);
-                    setLocationValue("POINT(" + lat + " " + lng + ")");
+                    console.log(lat);
+                    setLocationValue("POINT(" + lng + " " + lat + ")");
                     setLocationText(address);
                     setLocationSelect(true);
                   });
@@ -252,9 +249,9 @@ export function ChangeService({
         ) : (
           <div className="mb-2">
             <p>
-              {rowService.original.location_text === null
-                ? "REMOTE"
-                : rowService.original.location_text}
+              {rowService.original.location_text
+                ? rowService.original.location_text
+                : "REMOTE"}
             </p>
             <p
               className="text-primary hover:underline hover:cursor-pointer text-sm"

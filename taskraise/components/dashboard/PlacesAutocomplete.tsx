@@ -8,10 +8,12 @@ export const PlacesAutocomplete = ({
   onAddressSelect,
   selectState,
   setSelectState,
+  disabled,
 }: {
   onAddressSelect?: (address: string) => void;
   selectState: boolean;
   setSelectState: Dispatch<SetStateAction<boolean>>;
+  disabled?: boolean;
 }) => {
   const {
     ready,
@@ -58,7 +60,7 @@ export const PlacesAutocomplete = ({
         <h1>{selectState}</h1>
         <Input
           value={value}
-          disabled={!ready || selectState}
+          disabled={!ready || selectState || disabled}
           onChange={(e) => setValue(e.target.value)}
           placeholder="Search Location"
         />

@@ -21,14 +21,31 @@ async function MarketplaceMain({
   if (!("search" in searchParams)) {
     return <NoSearch />;
   } else {
+    if ("radius" in searchParams) {
+      const { data: tickets } = await supabase
+        .rpc("search_services_nearby", {
+          product_title: searchParams.search as string,
+          dist_meters: parseFloat(searchParams.radius as string) * 1600,
+          lat: parseFloat(searchParams.lat as string),
+          long: parseFloat(searchParams.long as string),
+        })
+        .select("*")
+        .limit(10);
+      return (
+        <Marketplace
+          searchParams={searchParams.search as string}
+          initialTickets={tickets ? tickets : []}
+        />
+      );
+    }
+
     const { data: tickets } = await supabase
-      .from("services")
-      .select("*")
-      .textSearch("title_description", searchParams.search as string, {
-        type: "websearch",
-        config: "english",
+      .rpc("search_services", {
+        product_title: searchParams.search as string,
       })
+      .select("*")
       .limit(10);
+
     return (
       <Marketplace
         searchParams={searchParams.search as string}

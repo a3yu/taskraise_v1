@@ -1,11 +1,5 @@
 "use client";
-import React, {
-  HtmlHTMLAttributes,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Logo from "@/public/black.svg";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
@@ -17,13 +11,19 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Search, SlidersHorizontalIcon } from "lucide-react";
+import { Filter, Search, SlidersHorizontalIcon } from "lucide-react";
 import Service from "@/components/marketplace/service/ServiceCard";
 import { Tables } from "@/types/supabase";
 import { supabase } from "../../../app/config/supabaseClient";
 import { useRouter } from "next/navigation";
 import debounce from "lodash/debounce";
 import { motion } from "framer-motion";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import FilterSearch from "../FilterSearch";
 
 function Marketplace({
   initialTickets,
@@ -55,6 +55,7 @@ function Marketplace({
   const [isLoading, setIsLoading] = useState(false);
   const [isInView, setIsInView] = useState(false);
   const [isLast, setIsLast] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
 
   const handleScroll = () => {
     if (containerRef.current && typeof window !== "undefined") {
@@ -99,13 +100,14 @@ function Marketplace({
     const from = offset * PAGE_COUNT;
     const to = from + PAGE_COUNT - 1;
 
-    const { data, error } = await supabase
-      .from("services")
+    const { data: tickets } = await supabase
+      .rpc("search_services", {
+        product_title: searchParams,
+      })
       .select("*")
-      .range(from, to)
-      .textSearch("title_description", searchParams);
+      .range(from, to);
 
-    return data ? data : [];
+    return tickets ? tickets : [];
   };
 
   return (
@@ -138,9 +140,7 @@ function Marketplace({
           >
             <Search />
           </Button>
-          <Button className="my-auto mx-2" variant={"outline"}>
-            <SlidersHorizontalIcon />
-          </Button>
+
           <div className="mx-10 flex space-x-8">
             <h2 className="font-semibold my-auto text-gray-600">Orders</h2>
             <DropdownMenu>
@@ -160,6 +160,11 @@ function Marketplace({
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
+        </div>
+      </div>
+      <div className="px-10 my-1">
+        <div className="flex my-auto">
+          <FilterSearch />
         </div>
       </div>
       <div className="flex flex-wrap justify-evenly mx-8 my-4 ">
