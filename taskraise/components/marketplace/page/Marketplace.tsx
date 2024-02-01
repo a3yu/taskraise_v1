@@ -88,7 +88,7 @@ function Marketplace({
   ): Promise<Tables<"services">[]> => {
     const from = offset * 10;
     const to = from + 10 - 1;
-    if (searchParams.radius == "any") {
+    if (searchParams.radius == "remote") {
       async (offset: number): Promise<Tables<"services">[]> => {
         const from = offset * 10;
         const to = from + 10 - 1;
