@@ -48,7 +48,7 @@ function Marketplace({
       setLoadedTickets(initialTickets);
     };
     fetchData();
-  }, [searchParams, filterParamsLocation]);
+  }, [searchParams, filterParamsLocation, filterParamsRadius]);
   const PAGE_COUNT = 10;
   const containerRef = useRef<HTMLDivElement | null>(null);
 
