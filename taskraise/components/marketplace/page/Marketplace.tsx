@@ -101,7 +101,7 @@ function Marketplace({
           .range(from, to);
         return tickets ? tickets : [];
       };
-    } else {
+    } else if (searchParams.radius) {
       async (offset: number): Promise<Tables<"services">[]> => {
         const from = offset * 10;
         const to = from + 10 - 1;
