@@ -18,23 +18,20 @@ import { supabase } from "../../../app/config/supabaseClient";
 import { useRouter } from "next/navigation";
 import debounce from "lodash/debounce";
 import { motion } from "framer-motion";
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import FilterSearch from "../FilterSearch";
 
 function Marketplace({
   initialTickets,
-  searchParams,
   filterParamsLocation,
   filterParamsRadius,
+  searchParams,
 }: {
   initialTickets: Tables<"services">[];
-  searchParams: string;
   filterParamsLocation: string | null;
   filterParamsRadius: string | null;
+  searchParams: {
+    [key: string]: string | string[] | undefined;
+  };
 }) {
   const router = useRouter();
   const [tickets, setTickets] = useState<Tables<"services">[]>(initialTickets);
@@ -59,7 +56,6 @@ function Marketplace({
   const [isLoading, setIsLoading] = useState(false);
   const [isInView, setIsInView] = useState(false);
   const [isLast, setIsLast] = useState(false);
-  const [showFilters, setShowFilters] = useState(false);
 
   const handleScroll = () => {
     if (containerRef.current && typeof window !== "undefined") {
@@ -87,6 +83,50 @@ function Marketplace({
     }
   }, [isInView]);
 
+  const fetchTickets = async (
+    offset: number
+  ): Promise<Tables<"services">[]> => {
+    const from = offset * 10;
+    const to = from + 10 - 1;
+    if (searchParams.radius == "any") {
+      async (offset: number): Promise<Tables<"services">[]> => {
+        const from = offset * 10;
+        const to = from + 10 - 1;
+
+        const { data: tickets } = await supabase
+          .rpc("search_services_remote", {
+            product_title: searchParams.search as string,
+          })
+          .select("*")
+          .range(from, to);
+        return tickets ? tickets : [];
+      };
+    } else {
+      async (offset: number): Promise<Tables<"services">[]> => {
+        const from = offset * 10;
+        const to = from + 10 - 1;
+
+        const { data: tickets } = await supabase
+          .rpc("search_services_nearby", {
+            product_title: searchParams.search as string,
+            dist_meters: parseFloat(searchParams.radius as string) * 1600,
+            lat: parseFloat(searchParams.lat as string),
+            long: parseFloat(searchParams.long as string),
+          })
+          .select("*")
+          .range(from, to);
+        return tickets ? tickets : [];
+      };
+    }
+    const { data: tickets } = await supabase
+      .rpc("search_services", {
+        product_title: searchParams.search as string,
+      })
+      .select("*")
+      .range(from, to);
+    return tickets ? tickets : [];
+  };
+
   const loadMoreTickets = async (offset: number) => {
     setIsLoading(true);
     setOffset((prev) => prev + 1);
@@ -96,22 +136,6 @@ function Marketplace({
     }
     setLoadedTickets((prevTickets) => [...prevTickets, ...newTickets]);
     setIsLoading(false);
-  };
-
-  const fetchTickets = async (
-    offset: number
-  ): Promise<Tables<"services">[]> => {
-    const from = offset * PAGE_COUNT;
-    const to = from + PAGE_COUNT - 1;
-
-    const { data: tickets } = await supabase
-      .rpc("search_services", {
-        product_title: searchParams,
-      })
-      .select("*")
-      .range(from, to);
-
-    return tickets ? tickets : [];
   };
 
   return (

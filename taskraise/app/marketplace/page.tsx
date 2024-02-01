@@ -1,6 +1,6 @@
 import Marketplace from "@/components/marketplace/page/Marketplace";
 import NoSearch from "@/components/marketplace/page/NoSearch";
-import { Database } from "@/types/supabase";
+import { Database, Tables } from "@/types/supabase";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
@@ -22,23 +22,41 @@ async function MarketplaceMain({
     return <NoSearch />;
   } else {
     if ("radius" in searchParams) {
-      const { data: tickets } = await supabase
-        .rpc("search_services_nearby", {
-          product_title: searchParams.search as string,
-          dist_meters: parseFloat(searchParams.radius as string) * 1600,
-          lat: parseFloat(searchParams.lat as string),
-          long: parseFloat(searchParams.long as string),
-        })
-        .select("*")
-        .limit(10);
-      return (
-        <Marketplace
-          searchParams={searchParams.search as string}
-          filterParamsLocation={searchParams.localName as string}
-          filterParamsRadius={searchParams.radius as string}
-          initialTickets={tickets ? tickets : []}
-        />
-      );
+      if (searchParams.radius != "remote") {
+        const { data: tickets } = await supabase
+          .rpc("search_services_nearby", {
+            product_title: searchParams.search as string,
+            dist_meters: parseFloat(searchParams.radius as string) * 1600,
+            lat: parseFloat(searchParams.lat as string),
+            long: parseFloat(searchParams.long as string),
+          })
+          .select("*")
+          .limit(10);
+
+        return (
+          <Marketplace
+            searchParams={searchParams}
+            filterParamsLocation={searchParams.localName as string}
+            filterParamsRadius={searchParams.radius as string}
+            initialTickets={tickets ? tickets : []}
+          />
+        );
+      } else {
+        const { data: tickets } = await supabase
+          .rpc("search_services_remote", {
+            product_title: searchParams.search as string,
+          })
+          .select("*")
+          .limit(10);
+        return (
+          <Marketplace
+            searchParams={searchParams}
+            filterParamsLocation={searchParams.localName as string}
+            filterParamsRadius={searchParams.radius as string}
+            initialTickets={tickets ? tickets : []}
+          />
+        );
+      }
     }
 
     const { data: tickets } = await supabase
@@ -50,7 +68,7 @@ async function MarketplaceMain({
 
     return (
       <Marketplace
-        searchParams={searchParams.search as string}
+        searchParams={searchParams}
         filterParamsLocation={null}
         filterParamsRadius={null}
         initialTickets={tickets ? tickets : []}

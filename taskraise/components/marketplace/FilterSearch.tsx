@@ -33,6 +33,7 @@ function FilterSearch({
   const router = useRouter();
   const [select, setSelect] = useState(false);
   const [locationChoice, setLocationChoice] = useState("");
+
   const [lat, setLat] = useState<number | null>(null);
   const [long, setLong] = useState<number | null>(null);
   const [radius, setRadius] = useState<number | null>(null);
@@ -148,14 +149,6 @@ function FilterSearch({
                         >
                           250 mi
                         </SelectItem>
-                        <SelectItem
-                          onClick={() => {
-                            setRadius(null);
-                          }}
-                          value="null"
-                        >
-                          Any
-                        </SelectItem>
                       </SelectGroup>
                     </SelectContent>
                   </Select>
@@ -166,18 +159,30 @@ function FilterSearch({
               className="bg-black mt-2 hover:bg-gray-800"
               onClick={() => {
                 const params = new URLSearchParams(window.location.search);
-                params.set("lat", lat?.toString() ?? "");
-                params.set("long", long?.toString() ?? "");
-                params.set("localName", localName?.toString() ?? "");
-                params.set("radius", radius?.toString() ?? "any");
-                router.push("/marketplace?" + params.toString());
-                setRadius(null);
-                setLocationChoice("");
-                setLat(null);
-                setLong(null);
-                setLocalName(null);
-                setSelect(false);
-                setOpenLocal(false);
+                if (locationChoice === "remote") {
+                  params.set("radius", "remote");
+                  router.push("/marketplace?" + params.toString());
+                  setRadius(null);
+                  setLocationChoice("");
+                  setLat(null);
+                  setLong(null);
+                  setLocalName(null);
+                  setSelect(false);
+                  setOpenLocal(false);
+                } else {
+                  params.set("lat", lat?.toString() ?? "");
+                  params.set("long", long?.toString() ?? "");
+                  params.set("localName", localName?.toString() ?? "");
+                  params.set("radius", radius?.toString() ?? "25");
+                  router.push("/marketplace?" + params.toString());
+                  setRadius(null);
+                  setLocationChoice("");
+                  setLat(null);
+                  setLong(null);
+                  setLocalName(null);
+                  setSelect(false);
+                  setOpenLocal(false);
+                }
               }}
             >
               Apply
@@ -203,6 +208,19 @@ function FilterSearch({
             }}
           >
             {locationNameParam} : {radiusParam} miles
+            <X className="p-1" />
+          </Badge>
+        )}
+        {radiusParam == "remote" && (
+          <Badge
+            className="bg-black hover:bg-gray-800 hover:cursor-pointer"
+            onClick={() => {
+              const params = new URLSearchParams(window.location.search);
+              params.delete("radius");
+              router.push("/marketplace?" + params.toString());
+            }}
+          >
+            Remote
             <X className="p-1" />
           </Badge>
         )}
