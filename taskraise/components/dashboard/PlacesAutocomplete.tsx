@@ -2,7 +2,6 @@ import usePlacesAutocomplete from "use-places-autocomplete";
 import { useLoadScript } from "@react-google-maps/api";
 import { Input } from "../ui/input";
 import { Dispatch, SetStateAction } from "react";
-import { X } from "lucide-react";
 
 export const PlacesAutocomplete = ({
   onAddressSelect,

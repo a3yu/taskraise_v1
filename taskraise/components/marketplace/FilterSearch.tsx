@@ -21,21 +21,35 @@ import {
 } from "@/components/ui/select";
 import { useRouter } from "next/navigation";
 import { set } from "lodash";
+import { Badge } from "../ui/badge";
 
-function FilterSearch() {
+function FilterSearch({
+  locationNameParam,
+  radiusParam,
+}: {
+  locationNameParam: string | null;
+  radiusParam: string | null;
+}) {
   const router = useRouter();
   const [select, setSelect] = useState(false);
   const [locationChoice, setLocationChoice] = useState("");
   const [lat, setLat] = useState<number | null>(null);
   const [long, setLong] = useState<number | null>(null);
   const [radius, setRadius] = useState<number | null>(null);
-  console.log(radius);
+  const [localName, setLocalName] = useState<string | null>(null);
+  const [openLocal, setOpenLocal] = useState(false);
   return (
     <div className="px-10 py-2 ">
       <div className="flex  space-x-3">
-        <Popover>
+        <Popover open={openLocal} onOpenChange={setOpenLocal}>
           <PopoverTrigger asChild>
-            <Button variant={"outline"} className="font-medium">
+            <Button
+              variant={"outline"}
+              className="font-medium"
+              onClick={() => {
+                setOpenLocal(true);
+              }}
+            >
               Location/Delivery Type {<ChevronDown className="pl-2" />}
             </Button>
           </PopoverTrigger>
@@ -71,6 +85,7 @@ function FilterSearch() {
                           const { lat, lng } = getLatLng(results[0]);
                           setLat(lat);
                           setLong(lng);
+                          setLocalName(address);
                           setSelect(true);
                         });
                       }}
@@ -83,6 +98,7 @@ function FilterSearch() {
                         setSelect(false);
                         setLat(null);
                         setLong(null);
+                        setLocalName(null);
                       }}
                     />
                   )}
@@ -147,18 +163,21 @@ function FilterSearch() {
               </div>
             </RadioGroup>
             <Button
-              className="bg-black mt-2"
+              className="bg-black mt-2 hover:bg-gray-800"
               onClick={() => {
                 const params = new URLSearchParams(window.location.search);
                 params.set("lat", lat?.toString() ?? "");
                 params.set("long", long?.toString() ?? "");
+                params.set("localName", localName?.toString() ?? "");
                 params.set("radius", radius?.toString() ?? "any");
                 router.push("/marketplace?" + params.toString());
                 setRadius(null);
                 setLocationChoice("");
                 setLat(null);
                 setLong(null);
+                setLocalName(null);
                 setSelect(false);
+                setOpenLocal(false);
               }}
             >
               Apply
@@ -168,6 +187,25 @@ function FilterSearch() {
         <Button variant={"outline"} className="font-medium">
           Budget {<ChevronDown className="pl-2" />}
         </Button>
+      </div>
+      <div className="py-5 flex space-x-4">
+        {locationNameParam && (
+          <Badge
+            className="bg-black hover:bg-gray-800 hover:cursor-pointer"
+            onClick={() => {
+              const params = new URLSearchParams(window.location.search);
+              params.delete("lat");
+              params.delete("long");
+              params.delete("radius");
+              params.delete("localName");
+
+              router.push("/marketplace?" + params.toString());
+            }}
+          >
+            {locationNameParam} : {radiusParam} miles
+            <X className="p-1" />
+          </Badge>
+        )}
       </div>
     </div>
   );

@@ -34,6 +34,8 @@ async function MarketplaceMain({
       return (
         <Marketplace
           searchParams={searchParams.search as string}
+          filterParamsLocation={searchParams.localName as string}
+          filterParamsRadius={searchParams.radius as string}
           initialTickets={tickets ? tickets : []}
         />
       );
@@ -49,6 +51,8 @@ async function MarketplaceMain({
     return (
       <Marketplace
         searchParams={searchParams.search as string}
+        filterParamsLocation={null}
+        filterParamsRadius={null}
         initialTickets={tickets ? tickets : []}
       />
     );

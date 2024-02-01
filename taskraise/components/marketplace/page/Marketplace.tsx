@@ -28,9 +28,13 @@ import FilterSearch from "../FilterSearch";
 function Marketplace({
   initialTickets,
   searchParams,
+  filterParamsLocation,
+  filterParamsRadius,
 }: {
   initialTickets: Tables<"services">[];
   searchParams: string;
+  filterParamsLocation: string | null;
+  filterParamsRadius: string | null;
 }) {
   const router = useRouter();
   const [tickets, setTickets] = useState<Tables<"services">[]>(initialTickets);
@@ -47,7 +51,7 @@ function Marketplace({
       setLoadedTickets(initialTickets);
     };
     fetchData();
-  }, [searchParams]);
+  }, [searchParams, filterParamsLocation]);
   const PAGE_COUNT = 10;
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -164,7 +168,10 @@ function Marketplace({
       </div>
       <div className="px-10 my-1">
         <div className="flex my-auto">
-          <FilterSearch />
+          <FilterSearch
+            locationNameParam={filterParamsLocation}
+            radiusParam={filterParamsRadius}
+          />
         </div>
       </div>
       <div className="flex flex-wrap justify-evenly mx-8 my-4 ">
