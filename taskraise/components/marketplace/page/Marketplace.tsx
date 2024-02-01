@@ -89,34 +89,30 @@ function Marketplace({
     const from = offset * 10;
     const to = from + 10 - 1;
     if (searchParams.radius == "remote") {
-      async (offset: number): Promise<Tables<"services">[]> => {
-        const from = offset * 10;
-        const to = from + 10 - 1;
+      const from = offset * 10;
+      const to = from + 10 - 1;
 
-        const { data: tickets } = await supabase
-          .rpc("search_services_remote", {
-            product_title: searchParams.search as string,
-          })
-          .select("*")
-          .range(from, to);
-        return tickets ? tickets : [];
-      };
+      const { data: tickets } = await supabase
+        .rpc("search_services_remote", {
+          product_title: searchParams.search as string,
+        })
+        .select("*")
+        .range(from, to);
+      return tickets ? tickets : [];
     } else if (searchParams.radius) {
-      async (offset: number): Promise<Tables<"services">[]> => {
-        const from = offset * 10;
-        const to = from + 10 - 1;
+      const from = offset * 10;
+      const to = from + 10 - 1;
 
-        const { data: tickets } = await supabase
-          .rpc("search_services_nearby", {
-            product_title: searchParams.search as string,
-            dist_meters: parseFloat(searchParams.radius as string) * 1600,
-            lat: parseFloat(searchParams.lat as string),
-            long: parseFloat(searchParams.long as string),
-          })
-          .select("*")
-          .range(from, to);
-        return tickets ? tickets : [];
-      };
+      const { data: tickets } = await supabase
+        .rpc("search_services_nearby", {
+          product_title: searchParams.search as string,
+          dist_meters: parseFloat(searchParams.radius as string) * 1600,
+          lat: parseFloat(searchParams.lat as string),
+          long: parseFloat(searchParams.long as string),
+        })
+        .select("*")
+        .range(from, to);
+      return tickets ? tickets : [];
     }
     const { data: tickets } = await supabase
       .rpc("search_services", {
