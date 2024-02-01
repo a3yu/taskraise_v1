@@ -42,13 +42,6 @@ function Marketplace({
       router.push("/marketplace?search=" + search);
     }
   };
-  useEffect(() => {
-    const fetchData = async () => {
-      setTickets(initialTickets);
-      setLoadedTickets(initialTickets);
-    };
-    fetchData();
-  }, [searchParams, filterParamsLocation, filterParamsRadius]);
   const PAGE_COUNT = 10;
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -56,6 +49,14 @@ function Marketplace({
   const [isLoading, setIsLoading] = useState(false);
   const [isInView, setIsInView] = useState(false);
   const [isLast, setIsLast] = useState(false);
+  useEffect(() => {
+    const fetchData = async () => {
+      setTickets(initialTickets);
+      setLoadedTickets(initialTickets);
+      setOffset(1);
+    };
+    fetchData();
+  }, [searchParams, filterParamsLocation, filterParamsRadius]);
 
   const handleScroll = () => {
     if (containerRef.current && typeof window !== "undefined") {
@@ -71,9 +72,9 @@ function Marketplace({
       () => !isLast && handleScroll(),
       200
     );
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleDebouncedScroll);
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("scroll", handleDebouncedScroll);
     };
   }, []);
 
@@ -98,6 +99,7 @@ function Marketplace({
         })
         .select("*")
         .range(from, to);
+      console.log("remote");
       return tickets ? tickets : [];
     } else if (searchParams.radius) {
       const from = offset * 10;
@@ -112,6 +114,7 @@ function Marketplace({
         })
         .select("*")
         .range(from, to);
+      console.log("nearby");
       return tickets ? tickets : [];
     }
     const { data: tickets } = await supabase
@@ -120,17 +123,24 @@ function Marketplace({
       })
       .select("*")
       .range(from, to);
+    console.log(from);
+    console.log(to);
     return tickets ? tickets : [];
   };
 
   const loadMoreTickets = async (offset: number) => {
     setIsLoading(true);
+
     setOffset((prev) => prev + 1);
+
     const newTickets = await fetchTickets(offset);
     if (newTickets.length < PAGE_COUNT) {
       setIsLast(true);
     }
+    console.log(isLast);
     setLoadedTickets((prevTickets) => [...prevTickets, ...newTickets]);
+    console.log(loadedTickets);
+
     setIsLoading(false);
   };
 
