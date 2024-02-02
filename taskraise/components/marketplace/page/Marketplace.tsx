@@ -55,6 +55,7 @@ function Marketplace({
       setTickets(initialTickets);
       setLoadedTickets(initialTickets);
       setOffset(1);
+      setIsLast(false);
     };
     fetchData();
   }, [searchParams, filterParamsLocation, filterParamsRadius]);
@@ -130,14 +131,16 @@ function Marketplace({
   const loadMoreTickets = async (offset: number) => {
     setIsLoading(true);
     setOffset((prev) => prev + 1);
-    if (isLast) {
+
+    if (!isLast) {
       const newTickets = await fetchTickets(offset);
+
+      setLoadedTickets((prevTickets) => [...prevTickets, ...newTickets]);
+
       if (newTickets.length < PAGE_COUNT) {
         setIsLast(true);
       }
-      setLoadedTickets((prevTickets) => [...prevTickets, ...newTickets]);
     }
-    console.log(loadedTickets);
 
     setIsLoading(false);
   };
@@ -205,12 +208,6 @@ function Marketplace({
       <div className="flex flex-wrap justify-evenly mx-8 my-4 ">
         {tickets.length == 0 && <h1>No search results.</h1>}
         {loadedTickets.map((ticket, index) => {
-          const recalculatedDelay =
-            index >= PAGE_COUNT * 2
-              ? (index - PAGE_COUNT * (offset - 1)) / 15
-              : index / 15;
-          console.log(recalculatedDelay);
-
           return (
             <motion.div
               key={ticket.id}
@@ -221,6 +218,9 @@ function Marketplace({
             </motion.div>
           );
         })}
+      </div>
+      <div className="w-full">
+        {isLoading && <h3 className="mx-auto text-center p-5">Loading...</h3>}
       </div>
     </div>
   );
