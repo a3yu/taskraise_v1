@@ -31,7 +31,7 @@ async function MarketplaceMain({
             long: parseFloat(searchParams.long as string),
           })
           .select("*")
-          .limit(10);
+          .limit(40);
 
         return (
           <Marketplace
@@ -47,7 +47,7 @@ async function MarketplaceMain({
             product_title: searchParams.search as string,
           })
           .select("*")
-          .limit(10);
+          .limit(40);
         return (
           <Marketplace
             searchParams={searchParams}
@@ -64,7 +64,7 @@ async function MarketplaceMain({
         product_title: searchParams.search as string,
       })
       .select("*")
-      .limit(10);
+      .limit(40);
 
     return (
       <Marketplace

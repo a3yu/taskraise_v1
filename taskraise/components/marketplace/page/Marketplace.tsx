@@ -54,6 +54,7 @@ function Marketplace({
       setTickets(initialTickets);
       setLoadedTickets(initialTickets);
       setOffset(1);
+      setIsLast(false);
     };
     fetchData();
   }, [searchParams, filterParamsLocation, filterParamsRadius]);
@@ -68,10 +69,7 @@ function Marketplace({
   };
 
   useEffect(() => {
-    const handleDebouncedScroll = debounce(
-      () => !isLast && handleScroll(),
-      200
-    );
+    const handleDebouncedScroll = debounce(() => !isLast && handleScroll());
     window.addEventListener("scroll", handleDebouncedScroll);
     return () => {
       window.removeEventListener("scroll", handleDebouncedScroll);
@@ -130,9 +128,7 @@ function Marketplace({
 
   const loadMoreTickets = async (offset: number) => {
     setIsLoading(true);
-
     setOffset((prev) => prev + 1);
-
     const newTickets = await fetchTickets(offset);
     if (newTickets.length < PAGE_COUNT) {
       setIsLast(true);
