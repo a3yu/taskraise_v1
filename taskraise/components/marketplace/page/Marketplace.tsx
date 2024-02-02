@@ -130,12 +130,13 @@ function Marketplace({
   const loadMoreTickets = async (offset: number) => {
     setIsLoading(true);
     setOffset((prev) => prev + 1);
-    const newTickets = await fetchTickets(offset);
-    if (newTickets.length < PAGE_COUNT) {
-      setIsLast(true);
+    if (isLast) {
+      const newTickets = await fetchTickets(offset);
+      if (newTickets.length < PAGE_COUNT) {
+        setIsLast(true);
+      }
+      setLoadedTickets((prevTickets) => [...prevTickets, ...newTickets]);
     }
-    console.log(isLast);
-    setLoadedTickets((prevTickets) => [...prevTickets, ...newTickets]);
     console.log(loadedTickets);
 
     setIsLoading(false);
@@ -221,7 +222,6 @@ function Marketplace({
           );
         })}
       </div>
-      {isLoading && <h2 className="mx-auto">Loading...</h2>}
     </div>
   );
 }
