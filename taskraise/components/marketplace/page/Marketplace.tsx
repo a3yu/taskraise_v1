@@ -42,7 +42,7 @@ function Marketplace({
       router.push("/marketplace?search=" + search);
     }
   };
-  const PAGE_COUNT = 10;
+  const PAGE_COUNT = 40;
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   const [offset, setOffset] = useState(1);
@@ -54,7 +54,6 @@ function Marketplace({
       setTickets(initialTickets);
       setLoadedTickets(initialTickets);
       setOffset(1);
-      setIsLast(false);
     };
     fetchData();
   }, [searchParams, filterParamsLocation, filterParamsRadius]);
@@ -69,7 +68,10 @@ function Marketplace({
   };
 
   useEffect(() => {
-    const handleDebouncedScroll = debounce(() => !isLast && handleScroll());
+    const handleDebouncedScroll = debounce(
+      () => !isLast && handleScroll(),
+      100
+    );
     window.addEventListener("scroll", handleDebouncedScroll);
     return () => {
       window.removeEventListener("scroll", handleDebouncedScroll);
@@ -85,11 +87,11 @@ function Marketplace({
   const fetchTickets = async (
     offset: number
   ): Promise<Tables<"services">[]> => {
-    const from = offset * 10;
-    const to = from + 10 - 1;
+    const from = offset * 40;
+    const to = from + 40 - 1;
     if (searchParams.radius == "remote") {
-      const from = offset * 10;
-      const to = from + 10 - 1;
+      const from = offset * 40;
+      const to = from + 40 - 1;
 
       const { data: tickets } = await supabase
         .rpc("search_services_remote", {
@@ -100,8 +102,8 @@ function Marketplace({
       console.log("remote");
       return tickets ? tickets : [];
     } else if (searchParams.radius) {
-      const from = offset * 10;
-      const to = from + 10 - 1;
+      const from = offset * 40;
+      const to = from + 40 - 1;
 
       const { data: tickets } = await supabase
         .rpc("search_services_nearby", {
