@@ -218,7 +218,6 @@ function Marketplace({
               transition={{
                 duration: 0.4,
                 ease: [0.25, 0.25, 0, 1],
-                delay: recalculatedDelay,
               }}
             >
               <Service service={ticket} />
