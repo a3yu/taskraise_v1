@@ -220,8 +220,8 @@ function Marketplace({
             </motion.div>
           );
         })}
-        {isLoading && <h2>Loading...</h2>}
       </div>
+      {isLoading && <h2 className="mx-auto">Loading...</h2>}
     </div>
   );
 }
