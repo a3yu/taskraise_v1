@@ -19,7 +19,11 @@ import { useRouter } from "next/navigation";
 import debounce from "lodash/debounce";
 import { motion } from "framer-motion";
 import FilterSearch from "../FilterSearch";
-import { getServicesSearchNormal } from "@/lib/server/serviceActionQuery";
+import {
+  getServicesSearchNearby,
+  getServicesSearchNormal,
+  getServicesSearchRemote,
+} from "@/lib/server/serviceActionQuery";
 
 function Marketplace({
   initialTickets,
@@ -92,31 +96,22 @@ function Marketplace({
     const from = offset * 30;
     const to = from + 30 - 1;
     if (searchParams.radius == "remote") {
-      const from = offset * 30;
-      const to = from + 30 - 1;
-
-      const { data: tickets } = await supabase
-        .rpc("search_services_remote", {
-          product_title: searchParams.search as string,
-        })
-        .select("*")
-        .range(from, to);
+      const tickets = await getServicesSearchRemote(
+        from,
+        to,
+        searchParams.search as string
+      );
       console.log("remote");
       return tickets ? tickets : [];
     } else if (searchParams.radius) {
-      const from = offset * 30;
-      const to = from + 30 - 1;
-
-      const { data: tickets } = await supabase
-        .rpc("search_services_nearby", {
-          product_title: searchParams.search as string,
-          dist_meters: parseFloat(searchParams.radius as string) * 1600,
-          lat: parseFloat(searchParams.lat as string),
-          long: parseFloat(searchParams.long as string),
-        })
-        .select("*")
-        .range(from, to);
-      console.log("nearby");
+      const tickets = await getServicesSearchNearby(
+        from,
+        to,
+        searchParams.string as string,
+        searchParams.radius as string,
+        searchParams.lat as string,
+        searchParams.long as string
+      );
       return tickets ? tickets : [];
     }
     const tickets = await getServicesSearchNormal(
