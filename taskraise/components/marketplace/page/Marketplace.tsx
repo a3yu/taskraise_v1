@@ -19,6 +19,7 @@ import { useRouter } from "next/navigation";
 import debounce from "lodash/debounce";
 import { motion } from "framer-motion";
 import FilterSearch from "../FilterSearch";
+import { getServicesSearchNormal } from "@/lib/server/serviceActionQuery";
 
 function Marketplace({
   initialTickets,
@@ -70,7 +71,7 @@ function Marketplace({
   useEffect(() => {
     const handleDebouncedScroll = debounce(
       () => !isLast && handleScroll(),
-      100
+      200
     );
     window.addEventListener("scroll", handleDebouncedScroll);
     return () => {
@@ -117,14 +118,12 @@ function Marketplace({
       console.log("nearby");
       return tickets ? tickets : [];
     }
-    const { data: tickets } = await supabase
-      .rpc("search_services", {
-        product_title: searchParams.search as string,
-      })
-      .select("*")
-      .range(from, to);
-    console.log(from);
-    console.log(to);
+    const tickets = await getServicesSearchNormal(
+      from,
+      to,
+      searchParams.search as string
+    );
+
     return tickets ? tickets : [];
   };
 
@@ -209,6 +208,7 @@ function Marketplace({
             index >= PAGE_COUNT * 2
               ? (index - PAGE_COUNT * (offset - 1)) / 15
               : index / 15;
+          console.log(recalculatedDelay);
 
           return (
             <motion.div
