@@ -42,7 +42,7 @@ function Marketplace({
       router.push("/marketplace?search=" + search);
     }
   };
-  const PAGE_COUNT = 40;
+  const PAGE_COUNT = 30;
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   const [offset, setOffset] = useState(1);
@@ -87,11 +87,11 @@ function Marketplace({
   const fetchTickets = async (
     offset: number
   ): Promise<Tables<"services">[]> => {
-    const from = offset * 40;
-    const to = from + 40 - 1;
+    const from = offset * 30;
+    const to = from + 30 - 1;
     if (searchParams.radius == "remote") {
-      const from = offset * 40;
-      const to = from + 40 - 1;
+      const from = offset * 30;
+      const to = from + 30 - 1;
 
       const { data: tickets } = await supabase
         .rpc("search_services_remote", {
@@ -102,8 +102,8 @@ function Marketplace({
       console.log("remote");
       return tickets ? tickets : [];
     } else if (searchParams.radius) {
-      const from = offset * 40;
-      const to = from + 40 - 1;
+      const from = offset * 30;
+      const to = from + 30 - 1;
 
       const { data: tickets } = await supabase
         .rpc("search_services_nearby", {
