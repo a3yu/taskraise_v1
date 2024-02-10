@@ -1,69 +1,69 @@
 import React, { useEffect } from "react";
-import { Icons } from "../icon";
+import Logo from "@/public/black.svg";
 import Link from "next/link";
 import { Button } from "../ui/button";
+import { User } from "@supabase/auth-helpers-nextjs";
 
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
-import { Database } from "@/types/supabase";
+import Image from "next/image";
 
-async function NavigationBar() {
-  const cookieStore = cookies();
-  const supabase = createServerComponentClient< Database>({
-    cookies: () => cookieStore,
-  });
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  console.log(user);
+function NavigationBar({ user }: { user: User | null }) {
   return (
-    <div className="p-5 px-10 ">
+    <div className="p-5 px-10 -mt-2 ">
       <section className="flex">
-        <div className="flex space-x-3 items-center">
-          <Icons.logo className="text-black" />
-          <h1 className="hidden font-bold sm:inline-block">TaskRaise</h1>
+        <div className="flex items-center">
+          <Image
+            src={Logo}
+            alt="Logo"
+            height={80}
+            className="hover:cursor-pointer"
+          />
+          <h1 className="font-bold text-xl my-auto -ml-2 hover:cursor-pointer">
+            TaskRaise
+          </h1>
         </div>
-        <div className="flex space-x-5 ml-5">
+        <div className="flex space-x-8 ml-10">
           <Link
-            href="hello"
-            className="flex items-center text-lg font-medium transition-colors hover:text-foreground/80 sm:text-sm"
+            href="about"
+            className="flex items-center text-lg font-medium transition-colors hover:text-foreground/80 sm:text-sm underline-offset-2 hover:underline"
           >
-            Hello
+            About
           </Link>
           <Link
-            href="hello"
-            className="flex items-center text-lg font-medium transition-colors hover:text-foreground/80 sm:text-sm"
+            href="marketplace"
+            className="flex items-center text-lg font-medium transition-colors hover:text-foreground/80 sm:text-sm underline-offset-2 hover:underline"
           >
-            Hello
+            Marketplace
           </Link>
-          <Link
-            href="hello"
-            className="flex items-center text-lg font-medium transition-colors hover:text-foreground/80 sm:text-sm"
+          {/* <Link
+            href=""
+            className="flex items-center text-lg font-medium transition-colors hover:text-foreground/80 sm:text-sm underline-offset-2 hover:underline"
           >
-            Hello
-          </Link>
+            For Businesses
+          </Link> */}
         </div>
-        {!user ? (
-          <>
-            <Button className="ml-auto">
-              {" "}
-              <Link href={"/sign-in"}>Sign In</Link>
-            </Button>
-            <Button className="ml-2 text-black" variant="link">
-              <Link href={"/sign-up"}>Sign Up</Link>
-            </Button>
-          </>
-        ) : (
-          <>
-            <Button className="ml-auto">
-              {" "}
-              <Link href={"/dashboard"}>Dashboard</Link>
-            </Button>
-            <Button className="ml-2 text-black" variant="link">
-              <Link href={"/api/signout"}>Sign Out</Link>
-            </Button>
-          </>
-        )}
+        <div className="my-auto ml-auto">
+          {!user ? (
+            <>
+              <Button className="ml-auto">
+                {" "}
+                <Link href={"/sign-in"}>Sign In</Link>
+              </Button>
+              <Button className="ml-2 text-black" variant="link">
+                <Link href={"/sign-up"}>Sign Up</Link>
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button className="ml-auto">
+                {" "}
+                <Link href={"/dashboard"}>Dashboard</Link>
+              </Button>
+              <Button className="ml-2 text-black" variant="link">
+                <Link href={"/api/signout"}>Sign Out</Link>
+              </Button>
+            </>
+          )}
+        </div>
       </section>
     </div>
   );

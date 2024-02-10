@@ -23,7 +23,8 @@ import {
   getServicesSearchNearby,
   getServicesSearchNormal,
   getServicesSearchRemote,
-} from "@/lib/server/serviceActionQuery";
+} from "@/lib/server/serviceQuery";
+import { searchQuery } from "@/lib/queryTypes";
 
 function Marketplace({
   initialTickets,
@@ -31,7 +32,7 @@ function Marketplace({
   filterParamsRadius,
   searchParams,
 }: {
-  initialTickets: Tables<"services">[];
+  initialTickets: searchQuery[];
   filterParamsLocation: string | null;
   filterParamsRadius: string | null;
   searchParams: {
@@ -39,7 +40,7 @@ function Marketplace({
   };
 }) {
   const router = useRouter();
-  const [tickets, setTickets] = useState<Tables<"services">[]>(initialTickets);
+  const [tickets, setTickets] = useState<searchQuery[]>(initialTickets);
   const [search, setSearch] = useState<string | null>();
   const [loadedTickets, setLoadedTickets] = useState(tickets);
   const onSearch = () => {
@@ -90,9 +91,7 @@ function Marketplace({
     }
   }, [isInView]);
 
-  const fetchTickets = async (
-    offset: number
-  ): Promise<Tables<"services">[]> => {
+  const fetchTickets = async (offset: number): Promise<searchQuery[]> => {
     const from = offset * 30;
     const to = from + 30 - 1;
     if (searchParams.radius == "remote") {
@@ -149,10 +148,20 @@ function Marketplace({
             alt="Logo"
             height={80}
             className="hover:cursor-pointer"
+            onClick={() => {
+              router.push("/");
+            }}
           />
-          <h1 className="font-bold text-xl my-auto -ml-2">TaskRaise</h1>
+          <h1
+            className="font-bold text-xl my-auto -ml-2 hover:cursor-pointer"
+            onClick={() => {
+              router.push("/");
+            }}
+          >
+            TaskRaise
+          </h1>
           <Input
-            className="my-auto ml-6"
+            className="my-auto ml-6 min-w-40 rounded-r-none rounded-b-none"
             placeholder="Search..."
             onSubmit={onSearch}
             onChange={(e) => {
@@ -165,10 +174,10 @@ function Marketplace({
             }}
           />
           <Button
-            className="my-auto bg-black hover:bg-gray-800 mx-2"
+            className="my-auto bg-black hover:bg-gray-800 rounded-l-none rounded-bl-none"
             onClick={onSearch}
           >
-            <Search />
+            <Search height={18} />
           </Button>
 
           <div className="mx-10 flex space-x-8">

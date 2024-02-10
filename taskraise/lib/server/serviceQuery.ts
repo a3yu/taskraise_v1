@@ -4,6 +4,20 @@ import { redirect } from "next/navigation";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Database } from "@/types/supabase";
 import { cookies } from "next/headers";
+import { searchQuery } from "../queryTypes";
+
+export async function getSingleServiceByID(id: number) {
+  const cookieStore = cookies();
+  const supabase = createServerComponentClient<Database>({
+    cookies: () => cookieStore,
+  });
+  const { data } = await supabase
+    .from("services")
+    .select("*")
+    .eq("id", id)
+    .single();
+  return data;
+}
 
 export async function getServicesSearchNormal(
   from: number,
@@ -18,8 +32,21 @@ export async function getServicesSearchNormal(
     .rpc("search_services", {
       product_title: search,
     })
-    .select("*")
-    .range(from, to);
+    .select(
+      `
+    *,
+    campaigns (
+      amt_goal,
+      amt_raised,
+      campaign_name
+    ),
+    organizations (
+      org_name
+    )
+  `
+    )
+    .range(from, to)
+    .returns<searchQuery[]>();
   return data;
 }
 
@@ -42,8 +69,21 @@ export async function getServicesSearchNearby(
       lat: parseFloat(lat),
       long: parseFloat(long),
     })
-    .select("*")
-    .range(from, to);
+    .select(
+      `
+    *,
+    campaigns (
+      amt_goal,
+      amt_raised,
+      campaign_name
+    ),
+    organizations (
+      org_name
+    )
+  `
+    )
+    .range(from, to)
+    .returns<searchQuery[]>();
   return data;
 }
 
@@ -60,7 +100,20 @@ export async function getServicesSearchRemote(
     .rpc("search_services_remote", {
       product_title: search,
     })
-    .select("*")
-    .range(from, to);
+    .select(
+      `
+    *,
+    campaigns (
+      amt_goal,
+      amt_raised,
+      campaign_name
+    ),
+    organizations (
+      org_name
+    )
+  `
+    )
+    .range(from, to)
+    .returns<searchQuery[]>();
   return data;
 }

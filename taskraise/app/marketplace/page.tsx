@@ -6,6 +6,8 @@ import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 
 import React from "react";
+import { QueryData } from "@supabase/supabase-js";
+import { searchQuery } from "@/lib/queryTypes";
 
 async function MarketplaceMain({
   params,
@@ -30,8 +32,21 @@ async function MarketplaceMain({
             lat: parseFloat(searchParams.lat as string),
             long: parseFloat(searchParams.long as string),
           })
-          .select("*")
-          .limit(30);
+          .select(
+            `
+    *,
+    campaigns (
+      amt_goal,
+      amt_raised,
+      campaign_name
+    ),
+    organizations (
+      org_name
+    )
+  `
+          )
+          .limit(30)
+          .returns<searchQuery[]>();
 
         return (
           <Marketplace
@@ -46,8 +61,21 @@ async function MarketplaceMain({
           .rpc("search_services_remote", {
             product_title: searchParams.search as string,
           })
-          .select("*")
-          .limit(30);
+          .select(
+            `
+    *,
+    campaigns (
+      amt_goal,
+      amt_raised,
+      campaign_name
+    ),
+    organizations (
+      org_name
+    )
+  `
+          )
+          .limit(30)
+          .returns<searchQuery[]>();
         return (
           <Marketplace
             searchParams={searchParams}
@@ -63,8 +91,21 @@ async function MarketplaceMain({
       .rpc("search_services", {
         product_title: searchParams.search as string,
       })
-      .select("*")
-      .limit(30);
+      .select(
+        `
+    *,
+    campaigns (
+      amt_goal,
+      amt_raised,
+      campaign_name
+    ),
+    organizations (
+      org_name
+    )
+  `
+      )
+      .limit(30)
+      .returns<searchQuery[]>();
 
     return (
       <Marketplace
