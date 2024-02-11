@@ -131,6 +131,7 @@ function ServiceOrder({
                 <CardContent className="p-8 space-y-5">
                   {exampleFields.map((fieldName) => (
                     <FormField
+                      key={fieldName}
                       control={form.control}
                       name={fieldName}
                       render={({ field }) => (
