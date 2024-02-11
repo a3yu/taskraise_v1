@@ -33,7 +33,7 @@ import { supabase } from "@/app/config/supabaseClient";
 import { useState } from "react";
 
 const formSchema = z.object({
-  username: z.string().min(6, {
+  username: z.string().trim().min(6, {
     message: "Username must be at least 5 characters.",
   }),
   password: z.string().min(8, {

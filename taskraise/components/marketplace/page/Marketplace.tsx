@@ -26,6 +26,8 @@ import {
 } from "@/lib/server/serviceQuery";
 import { searchQuery } from "@/lib/queryTypes";
 
+import NavigationBarSearch from "@/components/navigation/NavigationBarSearch";
+
 function Marketplace({
   initialTickets,
   filterParamsLocation,
@@ -141,66 +143,7 @@ function Marketplace({
 
   return (
     <div ref={containerRef}>
-      <div className="px-10 border-b">
-        <div className="flex my-auto">
-          <Image
-            src={Logo}
-            alt="Logo"
-            height={80}
-            className="hover:cursor-pointer"
-            onClick={() => {
-              router.push("/");
-            }}
-          />
-          <h1
-            className="font-bold text-xl my-auto -ml-2 hover:cursor-pointer"
-            onClick={() => {
-              router.push("/");
-            }}
-          >
-            TaskRaise
-          </h1>
-          <Input
-            className="my-auto ml-6 min-w-40 rounded-r-none rounded-b-none"
-            placeholder="Search..."
-            onSubmit={onSearch}
-            onChange={(e) => {
-              setSearch(e.target.value);
-            }}
-            onKeyDown={(event) => {
-              if (event.key === "Enter") {
-                onSearch();
-              }
-            }}
-          />
-          <Button
-            className="my-auto bg-black hover:bg-gray-800 rounded-l-none rounded-bl-none"
-            onClick={onSearch}
-          >
-            <Search height={18} />
-          </Button>
-
-          <div className="mx-10 flex space-x-8">
-            <h2 className="font-semibold my-auto text-gray-600">Orders</h2>
-            <DropdownMenu>
-              <DropdownMenuTrigger>
-                <Avatar>
-                  <AvatarImage
-                    src="https://github.com/shadcn.png"
-                    alt="@shadcn"
-                  />
-                  <AvatarFallback>CN</AvatarFallback>
-                </Avatar>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem>Example 1</DropdownMenuItem>
-                <DropdownMenuItem>Example 2</DropdownMenuItem>
-                <DropdownMenuItem>Example 3</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </div>
-      </div>
+      <NavigationBarSearch />
       <div className="px-10 my-1">
         <div className="flex my-auto">
           <FilterSearch

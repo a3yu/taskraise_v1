@@ -1,13 +1,14 @@
 import Marketplace from "@/components/marketplace/page/Marketplace";
-import NoSearch from "@/components/marketplace/page/NoSearch";
+
 import { Database, Tables } from "@/types/supabase";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 
 import React from "react";
-import { QueryData } from "@supabase/supabase-js";
+
 import { searchQuery } from "@/lib/queryTypes";
+import { getUser } from "@/lib/server/userQuery";
 
 async function MarketplaceMain({
   params,
@@ -20,8 +21,9 @@ async function MarketplaceMain({
   const supabase = createServerComponentClient<Database>({
     cookies: () => cookieStore,
   });
+  const user = await getUser();
   if (!("search" in searchParams)) {
-    return <NoSearch />;
+    redirect("/");
   } else {
     if ("radius" in searchParams) {
       if (searchParams.radius != "remote") {

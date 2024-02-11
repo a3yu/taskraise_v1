@@ -92,12 +92,6 @@ export default function DashboardLayout({
 
   return (
     <>
-      <AlertDialog open={alert}>
-        <AlertDialogContent>
-          <FinishProfile stateChanger={setAlert} />
-        </AlertDialogContent>
-      </AlertDialog>
-
       {dataFetch && (
         <div className="">
           <div className="bg-background">

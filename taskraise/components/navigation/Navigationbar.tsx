@@ -1,12 +1,14 @@
-import React, { useEffect } from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import Logo from "@/public/black.svg";
 import Link from "next/link";
 import { Button } from "../ui/button";
 import { User } from "@supabase/auth-helpers-nextjs";
-
+import { supabase } from "@/app/config/supabaseClient";
 import Image from "next/image";
 
 function NavigationBar({ user }: { user: User | null }) {
+  const [userState, setUserState] = useState(user);
   return (
     <div className="p-5 px-10 -mt-2 ">
       <section className="flex">
@@ -42,7 +44,7 @@ function NavigationBar({ user }: { user: User | null }) {
           </Link> */}
         </div>
         <div className="my-auto ml-auto">
-          {!user ? (
+          {!userState ? (
             <>
               <Button className="ml-auto">
                 {" "}
@@ -58,8 +60,15 @@ function NavigationBar({ user }: { user: User | null }) {
                 {" "}
                 <Link href={"/dashboard"}>Dashboard</Link>
               </Button>
-              <Button className="ml-2 text-black" variant="link">
-                <Link href={"/api/signout"}>Sign Out</Link>
+              <Button
+                className="ml-2 text-black"
+                variant="link"
+                onClick={() => {
+                  supabase.auth.signOut();
+                  setUserState(null);
+                }}
+              >
+                Sign Out
               </Button>
             </>
           )}

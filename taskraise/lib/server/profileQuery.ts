@@ -4,13 +4,20 @@ import { redirect } from "next/navigation";
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Database } from "@/types/supabase";
 import { cookies } from "next/headers";
-import { searchQuery } from "../queryTypes";
 
-export async function getUser() {
+export async function getProfileByID(id: string | null) {
+  if (id === null) {
+    return null;
+  }
   const cookieStore = cookies();
   const supabase = createServerComponentClient<Database>({
     cookies: () => cookieStore,
   });
-  const user = await supabase.auth.getUser();
-  return user;
+  const { data } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  return data;
 }

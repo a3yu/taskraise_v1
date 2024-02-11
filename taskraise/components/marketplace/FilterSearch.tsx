@@ -189,9 +189,6 @@ function FilterSearch({
             </Button>
           </PopoverContent>
         </Popover>
-        <Button variant={"outline"} className="font-medium">
-          Budget {<ChevronDown className="pl-2" />}
-        </Button>
       </div>
       <div className="py-5 flex space-x-4">
         {locationNameParam && (

@@ -4,6 +4,12 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import Script from "next/script";
+import { getUser } from "@/lib/server/userQuery";
+import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
+import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
+import { getProfileByID } from "@/lib/server/profileQuery";
+import { Database } from "@/types/supabase";
 
 export const metadata: Metadata = {
   title: "TaskRaise",
@@ -19,7 +25,7 @@ const fontHeading = localFont({
   variable: "--font-heading",
 });
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
