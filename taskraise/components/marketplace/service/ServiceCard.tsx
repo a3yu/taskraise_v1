@@ -53,7 +53,10 @@ function ServiceCard({ service }: { service: searchQuery }) {
       return (num / 1000000).toFixed(num % 1000000 !== 0 ? 1 : 0) + "m";
     }
   };
-
+  const formatted = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(service.price);
   return (
     <Card
       className=" m-2 hover:cursor-pointer hover:scale-105 hover:animate-in scale-100 animate-out"
@@ -90,7 +93,12 @@ function ServiceCard({ service }: { service: searchQuery }) {
         </p>
       </div>
       <div className="px-3 pb-2">
-        <p className="text-md font-bold">$30</p>
+        <p className="text-md font-bold">
+          {formatted}
+          <span className="text-xs font-normal">
+            {service.service_type == "hourly" && " per hour"}
+          </span>
+        </p>
         <p className="text-xs font-medium inline-block -mt-2">
           {formatNumber(service.orders_count)} orders
         </p>
@@ -106,7 +114,7 @@ function ServiceCard({ service }: { service: searchQuery }) {
           {formatDollarAmounts(
             service.campaigns.amt_raised,
             service.campaigns.amt_goal
-          )}
+          )}{" "}
         </p>
       </div>
     </Card>

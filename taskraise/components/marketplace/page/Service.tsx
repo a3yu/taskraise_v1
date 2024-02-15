@@ -148,7 +148,10 @@ export default function ServicePage({
               </div>
               <div className="flex items-center mt-2">
                 <CircleDollarSign />
-                <p className="text-base ml-2 my-auto">{formatted}</p>
+                <p className="text-base ml-2 my-auto">
+                  {formatted}
+                  {service.service_type == "hourly" && " per hour"}
+                </p>
               </div>
 
               <Button

@@ -281,6 +281,7 @@ export type Database = {
         Row: {
           campaign: number
           created_at: string
+          customer_info: string | null
           delivery_type: Database["public"]["Enums"]["delivery_method"] | null
           id: number
           location: unknown | null
@@ -289,13 +290,16 @@ export type Database = {
           organization: number
           price: number
           service_description: string
+          service_details: string | null
           service_title: string
+          service_type: string | null
           thumbnail_path: string
           title_description: string | null
         }
         Insert: {
           campaign?: number
           created_at?: string
+          customer_info?: string | null
           delivery_type?: Database["public"]["Enums"]["delivery_method"] | null
           id?: number
           location?: unknown | null
@@ -304,12 +308,15 @@ export type Database = {
           organization: number
           price: number
           service_description: string
+          service_details?: string | null
           service_title?: string
+          service_type?: string | null
           thumbnail_path: string
         }
         Update: {
           campaign?: number
           created_at?: string
+          customer_info?: string | null
           delivery_type?: Database["public"]["Enums"]["delivery_method"] | null
           id?: number
           location?: unknown | null
@@ -318,7 +325,9 @@ export type Database = {
           organization?: number
           price?: number
           service_description?: string
+          service_details?: string | null
           service_title?: string
+          service_type?: string | null
           thumbnail_path?: string
         }
         Relationships: [
@@ -1216,6 +1225,7 @@ export type Database = {
         Returns: {
           campaign: number
           created_at: string
+          customer_info: string | null
           delivery_type: Database["public"]["Enums"]["delivery_method"] | null
           id: number
           location: unknown | null
@@ -1224,7 +1234,9 @@ export type Database = {
           organization: number
           price: number
           service_description: string
+          service_details: string | null
           service_title: string
+          service_type: string | null
           thumbnail_path: string
         }[]
       }
@@ -1558,6 +1570,7 @@ export type Database = {
             Returns: {
               campaign: number
               created_at: string
+              customer_info: string | null
               delivery_type:
                 | Database["public"]["Enums"]["delivery_method"]
                 | null
@@ -1568,7 +1581,9 @@ export type Database = {
               organization: number
               price: number
               service_description: string
+              service_details: string | null
               service_title: string
+              service_type: string | null
               thumbnail_path: string
             }[]
           }
@@ -1582,6 +1597,7 @@ export type Database = {
             Returns: {
               campaign: number
               created_at: string
+              customer_info: string | null
               delivery_type:
                 | Database["public"]["Enums"]["delivery_method"]
                 | null
@@ -1592,7 +1608,9 @@ export type Database = {
               organization: number
               price: number
               service_description: string
+              service_details: string | null
               service_title: string
+              service_type: string | null
               thumbnail_path: string
             }[]
           }
@@ -1606,6 +1624,7 @@ export type Database = {
         Returns: {
           campaign: number
           created_at: string
+          customer_info: string | null
           delivery_type: Database["public"]["Enums"]["delivery_method"] | null
           id: number
           location: unknown | null
@@ -1614,7 +1633,9 @@ export type Database = {
           organization: number
           price: number
           service_description: string
+          service_details: string | null
           service_title: string
+          service_type: string | null
           thumbnail_path: string
         }[]
       }
@@ -1625,6 +1646,7 @@ export type Database = {
         Returns: {
           campaign: number
           created_at: string
+          customer_info: string | null
           delivery_type: Database["public"]["Enums"]["delivery_method"] | null
           id: number
           location: unknown | null
@@ -1633,7 +1655,9 @@ export type Database = {
           organization: number
           price: number
           service_description: string
+          service_details: string | null
           service_title: string
+          service_type: string | null
           thumbnail_path: string
         }[]
       }

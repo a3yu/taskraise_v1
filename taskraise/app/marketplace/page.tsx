@@ -27,7 +27,7 @@ async function MarketplaceMain({
   } else {
     if ("radius" in searchParams) {
       if (searchParams.radius != "remote") {
-        const { data: tickets } = await supabase
+        const { data: tickets, error } = await supabase
           .rpc("search_services_nearby", {
             product_title: searchParams.search as string,
             dist_meters: parseFloat(searchParams.radius as string) * 1600,

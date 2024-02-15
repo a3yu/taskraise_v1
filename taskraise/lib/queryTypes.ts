@@ -19,4 +19,5 @@ export type searchQuery = {
   service_description: string;
   service_title: string;
   thumbnail_path: string;
+  service_type: string;
 };
