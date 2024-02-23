@@ -26,21 +26,14 @@ function DashboardNavigationBar() {
           >
             Overview
           </Link>
-          <DropdownMenu>
-            <DropdownMenuTrigger>
-              <h2 className=" text-lg font-semibold transition-colors hover:text-foreground/80 sm:text-sm">
-                Fundraising
-              </h2>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem>
-                <Link href={"/dashboard/campaigns"}>Campaigns</Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Link href={"/dashboard/services"}>Services</Link>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+
+          <Link
+            href="/dashboard/services"
+            className="flex items-center text-lg font-semibold transition-colors hover:text-foreground/80 sm:text-sm"
+          >
+            Services
+          </Link>
+
           <DropdownMenu>
             <DropdownMenuTrigger>
               <h2 className=" text-lg font-semibold transition-colors hover:text-foreground/80 sm:text-sm">

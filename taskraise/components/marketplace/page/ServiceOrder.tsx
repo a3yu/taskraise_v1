@@ -1,7 +1,7 @@
 "use client";
 import NavigationBarSearch from "@/components/navigation/NavigationBarSearch";
 
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import Logo from "@/public/black.svg";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -17,7 +17,7 @@ import {
   MapPin,
   Search,
 } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
 import {
   Card,
   CardContent,
@@ -47,11 +47,17 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
-import { Stripe } from "@stripe/stripe-js";
-import { Elements, PaymentElement } from "@stripe/react-stripe-js";
+import { Stripe, StripeError } from "@stripe/stripe-js";
+import { PaymentElement, useElements } from "@stripe/react-stripe-js";
+import { useStripe } from "@stripe/react-stripe-js";
+import * as config from "@/config";
 
 import { User } from "@supabase/supabase-js";
+import { createPaymentIntent } from "@/utils/stripe";
 const formSchema = z.object({
+  cardholder_name: z.string().min(1, {
+    message: "Required.",
+  }),
   hours: z.coerce
     .number()
     .multipleOf(0.01, {
@@ -86,6 +92,8 @@ function ServiceOrder({
   organization: Tables<"organizations">;
   user: User;
 }) {
+  const stripe = useStripe();
+  const elements = useElements();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -96,7 +104,6 @@ function ServiceOrder({
 
   const [thumbnail, setThumbnail] = useState("");
   const [loading, setLoading] = useState(true);
-  const [payment, setPayment] = useState(null);
 
   useEffect(() => {
     async function downloadImage(path: string) {
@@ -147,13 +154,92 @@ function ServiceOrder({
     }
     return total + total * 0.029 + 0.3;
   }
+  const [input, setInput] = React.useState<{
+    customDonation: number;
+    cardholderName: string;
+  }>({
+    customDonation: Math.round(config.MAX_AMOUNT / config.AMOUNT_STEP),
+    cardholderName: "",
+  });
+  const [paymentType, setPaymentType] = React.useState<string>("");
+  const [payment, setPayment] = React.useState<{
+    status: "initial" | "processing" | "error";
+  }>({ status: "initial" });
+  const [errorMessage, setErrorMessage] = React.useState<string>("");
+  const PaymentStatus = ({ status }: { status: string }) => {
+    switch (status) {
+      case "processing":
+      case "requires_payment_method":
+      case "requires_confirmation":
+        return <h2>Processing...</h2>;
+
+      case "requires_action":
+        return <h2>Authenticating...</h2>;
+
+      case "succeeded":
+        return <h2>Payment Succeeded 🥳</h2>;
+
+      case "error":
+        return (
+          <>
+            <h2>Error 😭</h2>
+            <p className="text-red-800">{errorMessage}</p>
+          </>
+        );
+
+      default:
+        return null;
+    }
+  };
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const { error, data } = await supabase.from("services").insert({
-      org_id: organization.id,
-      price: calculateTotalCharge(),
-      order_details: values.order_details,
-      units: values.units,
-    });
+    try {
+      if (elements && stripe) {
+        setPayment({ status: "processing" });
+        const { error: submitError } = await elements.submit();
+        if (submitError) {
+          setPayment({ status: "error" });
+          setErrorMessage(submitError.message ?? "An unknown error occurred");
+
+          return;
+        }
+
+        const { client_secret: clientSecret, id: paymentIntentID } =
+          await createPaymentIntent(calculateTotalCharge());
+        const { error, data } = await supabase.from("orders").insert({
+          org_id: organization.id,
+          customer_id: user.id,
+          price: calculateTotalCharge(),
+          order_details: values.order_details,
+          status: "REQUESTED",
+          hours: values.hours,
+          units: values.units,
+          payment_intent: paymentIntentID,
+        });
+        console.log(error?.message);
+        const { error: confirmError } = await stripe!.confirmPayment({
+          elements,
+          clientSecret,
+          confirmParams: {
+            return_url: `${window.location.origin}`,
+            payment_method_data: {
+              billing_details: {
+                name: values.cardholder_name,
+              },
+            },
+          },
+        });
+        if (confirmError) {
+          setPayment({ status: "error" });
+          setErrorMessage(confirmError.message ?? "An unknown error occurred");
+        }
+      }
+    } catch (err) {
+      const { message } = err as StripeError;
+      console.log(message);
+
+      setPayment({ status: "error" });
+      setErrorMessage(message ?? "An unknown error occurred");
+    }
   }
   return (
     <div>
@@ -219,7 +305,7 @@ function ServiceOrder({
                   )}
                 </CardContent>
                 <CardFooter>
-                  <p>
+                  <p className="text-sm">
                     <span className="font-semibold -pb-4">Details: </span>
                     {service.service_details}
                   </p>
@@ -229,7 +315,22 @@ function ServiceOrder({
                 <CardHeader className="font-bold text-xl bg-gray-100">
                   {steps[1]}
                 </CardHeader>
-                <CardContent></CardContent>
+                <CardContent className="p-5">
+                  <FormField
+                    control={form.control}
+                    name="cardholder_name"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col mb-2">
+                        <FormLabel className="font-normal text-[#30313D]">
+                          Card Name
+                        </FormLabel>
+                        <Input {...field} />
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <PaymentElement />
+                </CardContent>
               </Card>
             </div>
             <div className="w-1/3">
@@ -349,9 +450,12 @@ function ServiceOrder({
                     </>
                   )}
                   <div className="w-full">
-                    <Button className="text-center w-2/3 mx-auto mt-6 block bg-black  hover:bg-gray-700">
+                    <Button
+                      className="text-center w-2/3 mx-auto mt-6 block bg-black  hover:bg-gray-800"
+                      disabled={payment.status == "processing"}
+                    >
                       Confirm and Pay
-                    </Button>
+                    </Button>{" "}
                     <p className="mt-2 text-gray-500 text-center text-sm">
                       Your payment will be refunded if the organization does not
                       accept the order in 4 days.

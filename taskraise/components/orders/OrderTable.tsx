@@ -1,5 +1,4 @@
 "use client";
-
 import * as React from "react";
 import {
   ColumnDef,
@@ -13,19 +12,8 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -35,27 +23,33 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Tables } from "@/types/supabase";
+import { supabase } from "@/app/config/supabaseClient";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTrigger,
+} from "../ui/dialog";
+import { useRouter, useSearchParams } from "next/navigation";
+import { acceptOrder, rejectOrder } from "@/lib/server/orderActions";
+import { orderQuery, orderQueryUser } from "@/lib/queryTypes";
 
-import { orderQuery } from "@/lib/queryTypes";
-import { useRouter } from "next/navigation";
-
-export const columns: ColumnDef<orderQuery & { username: string }>[] = [
+export const columns: ColumnDef<orderQueryUser & { org_name: string }>[] = [
   {
-    accessorKey: "username",
-    header: () => <div className="">Customer</div>,
-    cell: ({ row }) => {
-      return (
-        <div className="lowercase font-bold">{row.getValue("username")}</div>
-      );
+    accessorKey: "org_name",
+    header: () => <div className="">Organization</div>,
+    cell: function Cell({ row }) {
+      return <div className="font-bold">{row.getValue("org_name")}</div>;
     },
   },
   {
     accessorKey: "price",
     header: () => <div className="">Price</div>,
-    cell: ({ row }) => {
+    cell: function Cell({ row }) {
       const amount = parseFloat(row.getValue("price"));
-
-      // Format the amount as a dollar amount
       const formatted = new Intl.NumberFormat("en-US", {
         style: "currency",
         currency: "USD",
@@ -65,19 +59,27 @@ export const columns: ColumnDef<orderQuery & { username: string }>[] = [
     },
   },
   {
-    accessorKey: "id",
+    accessorKey: "created_at",
+    header: () => <div className="">Submitted</div>,
+    cell: function Cell({ row }) {
+      const a = new Date(row.getValue("created_at"));
+      console.log(row.getValue("created_at"));
+      return <div className=" font-medium">{a.toDateString()}</div>;
+    },
+  },
+  {
+    accessorKey: "order_details",
     header: () => <div className=""></div>,
-    enableHiding: false,
-    cell: ({ row }) => {
+    cell: function Cell({ row }) {
       const router = useRouter();
       return (
         <div className="float-right">
           <Button
             onClick={() => {
-              router.push(`/dashboard/orders/${row.getValue("id")}`);
+              router.push("/orders/" + row.original.id);
             }}
           >
-            View Order
+            Details
           </Button>
         </div>
       );
@@ -85,17 +87,18 @@ export const columns: ColumnDef<orderQuery & { username: string }>[] = [
   },
 ];
 
-export function OngoingOrders({
+export function OrderTable({
   orgOrders,
 }: {
-  orgOrders: (orderQuery & { username: string })[];
+  orgOrders: (orderQueryUser & { org_name: string })[];
 }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
   const [data, setData] =
-    React.useState<(orderQuery & { username: string })[]>(orgOrders);
+    React.useState<(orderQueryUser & { org_name: string })[]>(orgOrders);
+
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
@@ -126,19 +129,7 @@ export function OngoingOrders({
 
   return (
     <div className="w-full">
-      <div className="flex items-center py-4">
-        <Input
-          placeholder="Customer Search"
-          value={
-            (table.getColumn("username")?.getFilterValue() as string) ?? ""
-          }
-          onChange={(event) =>
-            table.getColumn("username")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
-      </div>
-      <div className="rounded-md border">
+      <div className="rounded-md border mt-6">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

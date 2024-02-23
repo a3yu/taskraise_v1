@@ -4,8 +4,6 @@ import type Stripe from "stripe";
 
 import React, { useState } from "react";
 
-import CustomDonationInput from "@/components/stripe/CustomDonationInput";
-
 import { formatAmountForDisplay } from "@/utils/stripe-helpers";
 import * as config from "@/config";
 import { createCheckoutSession } from "@/utils/stripe";
@@ -35,35 +33,8 @@ export default function CheckoutForm(props: CheckoutFormProps): JSX.Element {
       [e.currentTarget.name]: e.currentTarget.value,
     });
 
-  const formAction = async (data: FormData): Promise<void> => {
-    const uiMode = data.get(
-      "uiMode"
-    ) as Stripe.Checkout.SessionCreateParams.UiMode;
-    const { client_secret, url } = await createCheckoutSession(data);
-
-    if (uiMode === "embedded") return setClientSecret(client_secret);
-
-    window.location.assign(url as string);
-  };
-
   return (
     <>
-      <form action={formAction}>
-        <input type="hidden" name="uiMode" value={props.uiMode} />
-        <CustomDonationInput
-          name="customDonation"
-          min={config.MIN_AMOUNT}
-          max={config.MAX_AMOUNT}
-          step={config.AMOUNT_STEP}
-          currency={config.CURRENCY}
-          onChange={handleInputChange}
-          value={input.customDonation}
-        />
-
-        <Button type="submit" disabled={loading}>
-          Donate {formatAmountForDisplay(input.customDonation, config.CURRENCY)}
-        </Button>
-      </form>
       {clientSecret ? (
         <EmbeddedCheckoutProvider
           stripe={getStripe()}

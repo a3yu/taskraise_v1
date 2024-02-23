@@ -26,26 +26,24 @@ import {
 import { Tables } from "@/types/supabase";
 import { supabase } from "@/app/config/supabaseClient";
 import {
-  AlertDialog,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTrigger,
-} from "../ui/alert-dialog";
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTrigger,
+} from "../ui/dialog";
 import { useRouter, useSearchParams } from "next/navigation";
 import { acceptOrder, rejectOrder } from "@/lib/server/orderActions";
+import { orderQuery } from "@/lib/queryTypes";
 
-export const columns: ColumnDef<Tables<"orders">>[] = [
+export const columns: ColumnDef<orderQuery & { username: string }>[] = [
   {
-    accessorKey: "customer_username",
+    accessorKey: "username",
     header: () => <div className="">Customer</div>,
     cell: function Cell({ row }) {
       return (
-        <div className="lowercase font-bold">
-          {row.getValue("customer_username")}
-        </div>
+        <div className="lowercase font-bold">{row.getValue("username")}</div>
       );
     },
   },
@@ -67,11 +65,12 @@ export const columns: ColumnDef<Tables<"orders">>[] = [
     header: () => <div className="">Submitted</div>,
     cell: function Cell({ row }) {
       const a = new Date(row.getValue("created_at"));
+      console.log(row.getValue("created_at"));
       return <div className=" font-medium">{a.toDateString()}</div>;
     },
   },
   {
-    accessorKey: "details",
+    accessorKey: "order_details",
     header: () => <div className=""></div>,
     cell: function Cell({ row }) {
       const [show, setShow] = React.useState(false);
@@ -93,7 +92,7 @@ export const columns: ColumnDef<Tables<"orders">>[] = [
       const [openReject, setOpenReject] = React.useState(false);
       return (
         <div className="float-right">
-          <AlertDialog open={show}>
+          <Dialog open={show} onOpenChange={setShow}>
             <Button
               onClick={() => {
                 setShow(true);
@@ -101,10 +100,10 @@ export const columns: ColumnDef<Tables<"orders">>[] = [
             >
               Details
             </Button>
-            <AlertDialogContent className="w-full">
-              <AlertDialogHeader>
+            <DialogContent className="w-full">
+              <DialogHeader>
                 <h1 className="font-bold text-2xl">Order Information</h1>
-              </AlertDialogHeader>
+              </DialogHeader>
               <div className="space-y-3">
                 <div>
                   <h2 className="font-semibold">Order Time</h2>
@@ -112,19 +111,19 @@ export const columns: ColumnDef<Tables<"orders">>[] = [
                 </div>
                 <div>
                   <h2 className="font-semibold">Order Details</h2>
-                  {row.getValue("details")}
+                  {row.getValue("order_details")}
                 </div>
               </div>
-              <AlertDialogFooter className="mt-2">
+              <DialogFooter className="mt-2">
                 <div className="mr-auto space-x-3">
-                  <AlertDialog open={openAccept}>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
+                  <Dialog open={openAccept} onOpenChange={setOpenAccept}>
+                    <DialogContent>
+                      <DialogHeader>
                         <h2 className="text-lg font-semibold text-gray-900">
                           Are you sure you want to accept this order?
                         </h2>
-                      </AlertDialogHeader>
-                      <AlertDialogDescription className="space-x-4 mt-4">
+                      </DialogHeader>
+                      <DialogDescription className="space-x-4 mt-4">
                         <Button
                           onClick={onAccept}
                           className="hover:bg-green-400 bg-green-500"
@@ -137,23 +136,23 @@ export const columns: ColumnDef<Tables<"orders">>[] = [
                         >
                           Cancel
                         </Button>
-                      </AlertDialogDescription>
-                    </AlertDialogContent>
+                      </DialogDescription>
+                    </DialogContent>
                     <Button
                       onClick={() => setOpenAccept(true)}
                       className="hover:bg-green-400 bg-green-500"
                     >
                       Accept
                     </Button>
-                  </AlertDialog>
-                  <AlertDialog open={openReject}>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
+                  </Dialog>
+                  <Dialog open={openReject} onOpenChange={setOpenReject}>
+                    <DialogContent>
+                      <DialogHeader>
                         <h2 className="text-lg font-semibold text-gray-900">
                           Are you sure you want to reject this order?
                         </h2>
-                      </AlertDialogHeader>
-                      <AlertDialogDescription className="space-x-4 mt-4">
+                      </DialogHeader>
+                      <DialogDescription className="space-x-4 mt-4">
                         <Button
                           onClick={onReject}
                           className="hover:bg-red-400 bg-red-500"
@@ -166,22 +165,22 @@ export const columns: ColumnDef<Tables<"orders">>[] = [
                         >
                           Cancel
                         </Button>
-                      </AlertDialogDescription>
-                    </AlertDialogContent>
+                      </DialogDescription>
+                    </DialogContent>
                     <Button
                       onClick={() => setOpenReject(true)}
                       className="hover:bg-red-400 bg-red-500"
                     >
                       Reject
                     </Button>
-                  </AlertDialog>
+                  </Dialog>
                 </div>
                 <div className="float-right">
                   <Button onClick={() => setShow(false)}>Close</Button>
                 </div>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
       );
     },
@@ -191,13 +190,14 @@ export const columns: ColumnDef<Tables<"orders">>[] = [
 export function IncomingOrders({
   orgOrders,
 }: {
-  orgOrders: Tables<"orders">[];
+  orgOrders: (orderQuery & { username: string })[];
 }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
-  const [data, setData] = React.useState<Tables<"orders">[]>(orgOrders);
+  const [data, setData] =
+    React.useState<(orderQuery & { username: string })[]>(orgOrders);
 
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -233,14 +233,10 @@ export function IncomingOrders({
         <Input
           placeholder="Customer Search"
           value={
-            (table
-              .getColumn("customer_username")
-              ?.getFilterValue() as string) ?? ""
+            (table.getColumn("username")?.getFilterValue() as string) ?? ""
           }
           onChange={(event) =>
-            table
-              .getColumn("customer_username")
-              ?.setFilterValue(event.target.value)
+            table.getColumn("username")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />

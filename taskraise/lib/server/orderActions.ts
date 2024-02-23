@@ -10,8 +10,9 @@ export async function acceptOrder(id: number) {
   const supabase = createServerComponentClient<Database>({
     cookies: () => cookieStore,
   });
+
   await supabase.from("orders").update({ status: "ONGOING" }).eq("id", id);
-  console.log(id);
+
   redirect("/dashboard?update");
 }
 
@@ -24,5 +25,3 @@ export async function rejectOrder(id: number) {
 
   redirect("/dashboard?update");
 }
-
-

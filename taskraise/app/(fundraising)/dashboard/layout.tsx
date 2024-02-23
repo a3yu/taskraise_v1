@@ -6,7 +6,7 @@ function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <div>
       <DashboardNavigationBar />
-      {children}
+      <div className="px-24 py-10">{children}</div>
     </div>
   );
 }

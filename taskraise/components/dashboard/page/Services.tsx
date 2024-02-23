@@ -348,7 +348,7 @@ export default function Services({
   });
 
   return (
-    <div className="w-full px-16 py-7">
+    <div className="w-full">
       <h1 className="font-heading text-4xl">Services</h1>
       <div className="flex items-center py-4">
         <Input

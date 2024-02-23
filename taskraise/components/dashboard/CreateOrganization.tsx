@@ -24,6 +24,7 @@ import usePlacesAutocomplete, {
 } from "use-places-autocomplete";
 import { PlacesAutocomplete } from "./PlacesAutocomplete";
 import { X } from "lucide-react";
+import { createStripeAccount } from "@/utils/stripe";
 const formSchema = z.object({
   org_name: z
     .string()
@@ -71,7 +72,7 @@ export default function CreateOrganization({
   const { setValue } = form;
 
   const onSubmit = async function (values: z.infer<typeof formSchema>) {
-    console.log(values.location);
+    const stripeAcc = await createStripeAccount();
     const { data, error } = await supabase
       .from("organizations")
       .insert({
@@ -80,6 +81,7 @@ export default function CreateOrganization({
         org_owner: user,
         location: values.location,
         location_text: values.location_text,
+        stripe_account: stripeAcc.id,
       })
       .select("*")
       .single();

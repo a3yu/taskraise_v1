@@ -13,7 +13,14 @@ export async function getSingleServiceByID(id: number) {
   });
   const { data } = await supabase
     .from("services")
-    .select("*")
+    .select(
+      `
+    *,
+    organizations (
+      *
+    )
+  `
+    )
     .eq("id", id)
     .single();
   return data;

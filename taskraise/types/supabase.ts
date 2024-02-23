@@ -47,6 +47,48 @@ export type Database = {
           }
         ]
       }
+      messages: {
+        Row: {
+          created_at: string
+          from: string
+          id: number
+          order_id: number
+          payload: string
+          sender: string
+        }
+        Insert: {
+          created_at?: string
+          from?: string
+          id?: number
+          order_id: number
+          payload: string
+          sender: string
+        }
+        Update: {
+          created_at?: string
+          from?: string
+          id?: number
+          order_id?: number
+          payload?: string
+          sender?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "public_messages_order_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "public_messages_sender_fkey"
+            columns: ["sender"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       order_staffing: {
         Row: {
           assigned: string | null
@@ -87,32 +129,41 @@ export type Database = {
         Row: {
           created_at: string | null
           customer_id: string
-          customer_username: string
-          details: string
+          hours: number | null
           id: number
+          order_details: string
           org_id: number
+          payment_intent: string | null
           price: number
+          service: number
           status: Database["public"]["Enums"]["order_status"]
+          units: number | null
         }
         Insert: {
           created_at?: string | null
           customer_id: string
-          customer_username: string
-          details: string
+          hours?: number | null
           id?: number
+          order_details?: string
           org_id?: number
+          payment_intent?: string | null
           price: number
+          service: number
           status?: Database["public"]["Enums"]["order_status"]
+          units?: number | null
         }
         Update: {
           created_at?: string | null
           customer_id?: string
-          customer_username?: string
-          details?: string
+          hours?: number | null
           id?: number
+          order_details?: string
           org_id?: number
+          payment_intent?: string | null
           price?: number
+          service?: number
           status?: Database["public"]["Enums"]["order_status"]
+          units?: number | null
         }
         Relationships: [
           {
@@ -123,17 +174,17 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "orders_customer_username_fkey"
-            columns: ["customer_username"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["username"]
-          },
-          {
             foreignKeyName: "orders_org_id_fkey"
             columns: ["org_id"]
             isOneToOne: false
             referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "public_orders_service_fkey"
+            columns: ["service"]
+            isOneToOne: false
+            referencedRelation: "services"
             referencedColumns: ["id"]
           }
         ]
@@ -148,6 +199,7 @@ export type Database = {
           org_name: string
           org_owner: string
           primary_campaign: number | null
+          stripe_account: string | null
           total_orders: number
         }
         Insert: {
@@ -159,6 +211,7 @@ export type Database = {
           org_name: string
           org_owner: string
           primary_campaign?: number | null
+          stripe_account?: string | null
           total_orders?: number
         }
         Update: {
@@ -170,6 +223,7 @@ export type Database = {
           org_name?: string
           org_owner?: string
           primary_campaign?: number | null
+          stripe_account?: string | null
           total_orders?: number
         }
         Relationships: [
@@ -3606,6 +3660,7 @@ export type Database = {
       }
     }
     Enums: {
+      campaign: "MAIN" | "COMPLETE" | "IN_PROGRESS"
       delivery_method: "REMOTE" | "LOCAL"
       gen_role: "FUNDRAISER" | "BUYER"
       order_status:

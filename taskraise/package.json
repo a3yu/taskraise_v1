@@ -27,6 +27,8 @@
     "@radix-ui/react-slot": "^1.0.2",
     "@radix-ui/react-tabs": "^1.0.4",
     "@react-google-maps/api": "^2.19.2",
+    "@stripe/connect-js": "^3.3.0",
+    "@stripe/react-connect-js": "^3.3.2",
     "@stripe/react-stripe-js": "^2.4.0",
     "@stripe/stripe-js": "^2.4.0",
     "@supabase/auth-helpers-nextjs": "^0.8.7",

@@ -21,3 +21,38 @@ export type searchQuery = {
   thumbnail_path: string;
   service_type: string;
 };
+
+export type orderQuery = {
+  created_at: string;
+  customer_id: string;
+  customer_username: string;
+  hours: number | null;
+  id: number;
+  order_details: string;
+  org_id: number;
+  payment_intent: string | null;
+  price: number;
+  status: "REQUESTED" | "DISPUTED" | "COMPLETED" | "REJECTED" | "ONGOING";
+  units: number | null;
+  profiles: {
+    username: string;
+  };
+};
+
+export type orderQueryUser = {
+  created_at: string;
+  customer_id: string;
+  customer_username: string;
+  hours: number | null;
+  id: number;
+  order_details: string;
+  org_id: number;
+  payment_intent: string | null;
+  price: number;
+  status: "REQUESTED" | "DISPUTED" | "COMPLETED" | "REJECTED" | "ONGOING";
+  units: number | null;
+  service: number;
+  organizations: {
+    org_name: string;
+  };
+};

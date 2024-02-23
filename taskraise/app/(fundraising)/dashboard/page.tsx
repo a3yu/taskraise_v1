@@ -6,6 +6,20 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import NonAssignedUser from "@/components/dashboard/NonAssignedUser";
 import AssignedUser from "@/components/dashboard/AssignedUser";
+import { orderQuery } from "@/lib/queryTypes";
+function elevateUsername(order: orderQuery): orderQuery & { username: string } {
+  const { profiles, ...rest } = order;
+  return {
+    ...rest,
+    profiles,
+    username: profiles.username,
+  };
+}
+function elevateUsernames(
+  orders: orderQuery[]
+): (orderQuery & { username: string })[] {
+  return orders.map(elevateUsername);
+}
 async function DashboardHome({
   params,
   searchParams,
@@ -47,26 +61,39 @@ async function DashboardHome({
         .eq("organization", orgData.data.id);
       const orgOrders = await supabase
         .from("orders")
-        .select("*")
-        .eq("org_id", orgData.data.id);
+        .select(
+          `
+    *,
+    profiles (
+      username
+    )
+  `
+        )
+        .eq("org_id", orgData.data.id)
+        .returns<orderQuery[]>();
       if (orgUsers.data && orgOrders.data) {
-        console.log(orgOrders.data);
-        const orgOrdersIncoming = orgOrders.data.filter((order) => {
+        const newOrgOrders = elevateUsernames(orgOrders.data);
+        const orgOrdersIncoming = newOrgOrders.filter((order) => {
           return order.status === "REQUESTED";
         });
-        const orgOrdersOngoing = orgOrders.data.filter((order) => {
+        const orgOrdersOngoing = newOrgOrders.filter((order) => {
           return order.status === "ONGOING";
         });
-        const orgOrdersFinished = orgOrders.data.filter((order) => {
+        const orgOrdersFinished = newOrgOrders.filter((order) => {
           return order.status === "COMPLETED";
         });
+        const campaign = await supabase
+          .from("campaigns")
+          .select("*")
+          .eq("organization", orgData.data.id)
+          .single();
         return (
           <AssignedUser
             orgOrdersIncoming={orgOrdersIncoming ? orgOrdersIncoming : []}
             orgOrdersOngoing={orgOrdersOngoing ? orgOrdersOngoing : []}
             orgOrdersFinished={orgOrdersFinished ? orgOrdersFinished : []}
             orgData={orgData.data}
-            orgUsers={orgUsers.data}
+            campaign={campaign.data}
           />
         );
       }
