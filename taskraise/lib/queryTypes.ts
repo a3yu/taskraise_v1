@@ -30,10 +30,11 @@ export type orderQuery = {
   id: number;
   order_details: string;
   org_id: number;
-  payment_intent: string | null;
+  payment_intent: string;
   price: number;
   status: "REQUESTED" | "DISPUTED" | "COMPLETED" | "REJECTED" | "ONGOING";
   units: number | null;
+  platform_fee: number;
   profiles: {
     username: string;
   };

@@ -75,10 +75,16 @@ function AssignedUser({
   const [campaignState, setCampaign] = useState<Tables<"campaigns"> | null>(
     campaign
   );
+  const [orgOrdersOngoingState, setOrderOngoingState] =
+    useState(orgOrdersOngoing);
+  const [orgOrdersIncomingState, setOrderIncomingState] =
+    useState(orgOrdersIncoming);
+  const [orgOrdersFinishedState, setOrderFinishedState] =
+    useState(orgOrdersFinished);
   let totalPrice = 0;
-  const ongoingTasks = orgOrdersOngoing.length;
-  const completedTasks = orgOrdersFinished.length;
-  orgOrdersFinished.forEach((order) => {
+  const ongoingTasks = orgOrdersOngoingState.length;
+  const completedTasks = orgOrdersFinishedState.length;
+  orgOrdersFinishedState.forEach((order) => {
     totalPrice += order.price;
   });
   const formatted = new Intl.NumberFormat("en-US", {
@@ -365,7 +371,7 @@ function AssignedUser({
                 <CardTitle>Incoming Orders</CardTitle>
               </CardHeader>
               <CardContent>
-                <IncomingOrders orgOrders={orgOrdersIncoming} />
+                <IncomingOrders orgOrders={orgOrdersIncomingState} />
               </CardContent>
             </Card>
             <Card className="col-span-3 p-2">
@@ -379,7 +385,7 @@ function AssignedUser({
                     <CardTitle>Ongoing Orders</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <OngoingOrders orgOrders={orgOrdersOngoing} />
+                    <OngoingOrders orgOrders={orgOrdersOngoingState} />
                   </CardContent>
                 </TabsContent>
                 <TabsContent value="past">
@@ -388,7 +394,7 @@ function AssignedUser({
                     <CardTitle>Past Orders</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <PastOrders orgOrders={orgOrdersFinished} />
+                    <PastOrders orgOrders={orgOrdersFinishedState} />
                   </CardContent>
                 </TabsContent>
               </Tabs>

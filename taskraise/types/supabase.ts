@@ -133,7 +133,8 @@ export type Database = {
           id: number
           order_details: string
           org_id: number
-          payment_intent: string | null
+          payment_intent: string
+          platform_fee: number
           price: number
           service: number
           status: Database["public"]["Enums"]["order_status"]
@@ -146,7 +147,8 @@ export type Database = {
           id?: number
           order_details?: string
           org_id?: number
-          payment_intent?: string | null
+          payment_intent: string
+          platform_fee: number
           price: number
           service: number
           status?: Database["public"]["Enums"]["order_status"]
@@ -159,7 +161,8 @@ export type Database = {
           id?: number
           order_details?: string
           org_id?: number
-          payment_intent?: string | null
+          payment_intent?: string
+          platform_fee?: number
           price?: number
           service?: number
           status?: Database["public"]["Enums"]["order_status"]
@@ -199,7 +202,7 @@ export type Database = {
           org_name: string
           org_owner: string
           primary_campaign: number | null
-          stripe_account: string | null
+          stripe_account: string
           total_orders: number
         }
         Insert: {
@@ -211,7 +214,7 @@ export type Database = {
           org_name: string
           org_owner: string
           primary_campaign?: number | null
-          stripe_account?: string | null
+          stripe_account: string
           total_orders?: number
         }
         Update: {
@@ -223,7 +226,7 @@ export type Database = {
           org_name?: string
           org_owner?: string
           primary_campaign?: number | null
-          stripe_account?: string | null
+          stripe_account?: string
           total_orders?: number
         }
         Relationships: [

@@ -7,9 +7,7 @@ let stripePromise: Promise<Stripe | null>;
 
 export default function getStripe(): Promise<Stripe | null> {
   if (!stripePromise)
-    stripePromise = loadStripe(
-      "pk_test_51Oih6yIV7HR0j5ZnxWpdWgqLxyW02esnEjaKfjm64j8f2KZXJBnU0Dtbdf9wbTSDvdm7hcnxOzULy6RkwhUQiTO60076UKtGPY"
-    );
+    stripePromise = loadStripe(process.env.NEXT_STRIPE_PUBLIC_KEY as string);
 
   return stripePromise;
 }

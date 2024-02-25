@@ -37,7 +37,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { acceptOrder, rejectOrder } from "@/lib/server/orderActions";
 import { orderQuery } from "@/lib/queryTypes";
 
-export const columns: ColumnDef<orderQuery & { username: string }>[] = [
+const columns: ColumnDef<orderQuery & { username: string }>[] = [
   {
     accessorKey: "username",
     header: () => <div className="">Customer</div>,
@@ -79,12 +79,12 @@ export const columns: ColumnDef<orderQuery & { username: string }>[] = [
       );
       const router = useRouter();
       async function onAccept() {
-        await acceptOrder(row.original.id);
+        await acceptOrder(row.original.id, row.original.payment_intent);
         setOpenAccept(false);
         setShow(false);
       }
       async function onReject() {
-        await rejectOrder(row.original.id);
+        await rejectOrder(row.original.id, row.original.payment_intent);
         setOpenReject(false);
         setShow(false);
       }
@@ -189,8 +189,24 @@ export const columns: ColumnDef<orderQuery & { username: string }>[] = [
 
 export function IncomingOrders({
   orgOrders,
+  ongoingSetState,
+  incomingSetState,
 }: {
   orgOrders: (orderQuery & { username: string })[];
+  ongoingSetState: React.Dispatch<
+    React.SetStateAction<
+      (orderQuery & {
+        username: string;
+      })[]
+    >
+  >;
+  incomingSetState: React.Dispatch<
+    React.SetStateAction<
+      (orderQuery & {
+        username: string;
+      })[]
+    >
+  >;
 }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(

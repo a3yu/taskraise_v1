@@ -41,8 +41,9 @@ export default function ElementsForm({
           },
         },
         currency: config.CURRENCY,
-        mode: "payment",
         capture_method: "manual",
+        mode: "payment",
+
         amount: Math.round(config.MAX_AMOUNT / config.AMOUNT_STEP),
       }}
     >

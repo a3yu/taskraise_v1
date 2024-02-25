@@ -44,6 +44,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { supabase } from "@/app/config/supabaseClient";
 import { useRouter } from "next/navigation";
+import { completeOrder } from "@/lib/server/orderActions";
 const formSchema = z.object({
   message: z
     .string()
@@ -95,11 +96,9 @@ function OrderDetails({
       setShow(false);
     }
   }
-  async function completeOrder() {
-    await supabase
-      .from("orders")
-      .update({ status: "COMPLETED" })
-      .eq("id", order.id);
+  async function completeOrderClient() {
+    const amount = order.price - order.platform_fee;
+    await completeOrder(order.id);
     await supabase.from("messages").insert({
       sender: "System",
       order_id: order.id,
@@ -198,7 +197,7 @@ function OrderDetails({
                 <Button
                   className="bg-green-600 hover:bg-green-500"
                   onClick={async () => {
-                    await completeOrder().then(() => {
+                    await completeOrderClient().then(() => {
                       router.push("/orders");
                     });
                   }}

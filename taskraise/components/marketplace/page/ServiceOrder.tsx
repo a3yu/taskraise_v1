@@ -54,6 +54,12 @@ import * as config from "@/config";
 
 import { User } from "@supabase/supabase-js";
 import { createPaymentIntent } from "@/utils/stripe";
+import { Dialog } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+} from "@/components/ui/alert-dialog";
 const formSchema = z.object({
   cardholder_name: z.string().min(1, {
     message: "Required.",
@@ -138,22 +144,23 @@ function ServiceOrder({
     if (!total) {
       return -1;
     }
-    return total;
+    return Math.round((total + Number.EPSILON) * 100) / 100;
   }
   function calculateServiceCharge() {
     const total = form.watch("hours") * service.price * form.watch("units");
     if (!total) {
       return -1;
     }
-    return total * 0.029 + 0.3;
+    return Math.round((total * 0.029 + 0.3 + Number.EPSILON) * 100) / 100;
   }
   function calculateTotalCharge() {
     const total = form.watch("hours") * service.price * form.watch("units");
     if (!total) {
       return -1;
     }
-    return total + total * 0.029 + 0.3;
+    return calculateTotalPayment() + calculateServiceCharge();
   }
+  const [open, setOpen] = useState(false);
   const [input, setInput] = React.useState<{
     customDonation: number;
     cardholderName: string;
@@ -166,43 +173,15 @@ function ServiceOrder({
     status: "initial" | "processing" | "error";
   }>({ status: "initial" });
   const [errorMessage, setErrorMessage] = React.useState<string>("");
-  const PaymentStatus = ({ status }: { status: string }) => {
-    switch (status) {
-      case "processing":
-      case "requires_payment_method":
-      case "requires_confirmation":
-        return <h2>Processing...</h2>;
-
-      case "requires_action":
-        return <h2>Authenticating...</h2>;
-
-      case "succeeded":
-        return <h2>Payment Succeeded 🥳</h2>;
-
-      case "error":
-        return (
-          <>
-            <h2>Error 😭</h2>
-            <p className="text-red-800">{errorMessage}</p>
-          </>
-        );
-
-      default:
-        return null;
-    }
-  };
   async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       if (elements && stripe) {
         setPayment({ status: "processing" });
         const { error: submitError } = await elements.submit();
         if (submitError) {
-          setPayment({ status: "error" });
-          setErrorMessage(submitError.message ?? "An unknown error occurred");
-
+          window.alert("An unknown error occurred");
           return;
         }
-
         const { client_secret: clientSecret, id: paymentIntentID } =
           await createPaymentIntent(calculateTotalCharge());
         const { error, data } = await supabase.from("orders").insert({
@@ -214,23 +193,35 @@ function ServiceOrder({
           hours: values.hours,
           units: values.units,
           payment_intent: paymentIntentID,
+          service: service.id,
+          platform_fee: calculateServiceCharge(),
         });
-        console.log(error?.message);
-        const { error: confirmError } = await stripe!.confirmPayment({
-          elements,
-          clientSecret,
-          confirmParams: {
-            return_url: `${window.location.origin}`,
-            payment_method_data: {
-              billing_details: {
-                name: values.cardholder_name,
+        if (error) {
+          window.alert(
+            "An error occurred while processing your order. Please try again later."
+          );
+          console.log(error);
+          return;
+        } else {
+          const { error: confirmError } = await stripe!.confirmPayment({
+            elements,
+            clientSecret,
+            redirect: "if_required",
+            confirmParams: {
+              receipt_email: user.email,
+              return_url: "http://localhost:3000",
+              payment_method_data: {
+                billing_details: {
+                  name: values.cardholder_name,
+                },
               },
             },
-          },
-        });
-        if (confirmError) {
-          setPayment({ status: "error" });
-          setErrorMessage(confirmError.message ?? "An unknown error occurred");
+          });
+          if (confirmError) {
+            window.alert("An unknown error occurred");
+          } else {
+            setOpen(true);
+          }
         }
       }
     } catch (err) {
@@ -241,8 +232,24 @@ function ServiceOrder({
       setErrorMessage(message ?? "An unknown error occurred");
     }
   }
+
   return (
     <div>
+      <AlertDialog open={open}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <h1 className="text-2xl font-bold">Thank you for your order!</h1>
+          </AlertDialogHeader>
+          <p>Your order has been sent to the organization.</p>
+          <Button
+            onClick={() => {
+              router.push("/orders");
+            }}
+          >
+            Continue
+          </Button>
+        </AlertDialogContent>
+      </AlertDialog>
       <div className="px-0 sm:px-10 border-b">
         <div className="flex my-auto pb-5 pt-0 sm:py-0">
           <Image

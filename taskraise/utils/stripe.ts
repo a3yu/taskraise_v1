@@ -8,55 +8,6 @@ import { CURRENCY } from "@/config";
 import { formatAmountForStripe } from "@/utils/stripe-helpers";
 import { stripe } from "@/lib/stripe";
 
-export async function createCheckoutSession(
-  data: FormData
-): Promise<{ client_secret: string | null; url: string | null }> {
-  const ui_mode = data.get(
-    "uiMode"
-  ) as Stripe.Checkout.SessionCreateParams.UiMode;
-
-  const origin: string = headers().get("origin") as string;
-
-  const checkoutSession: Stripe.Checkout.Session =
-    await stripe.checkout.sessions.create({
-      mode: "payment",
-      setup_intent_data: {
-        metadata: {
-          capture_method: "manual",
-        },
-      },
-      submit_type: "donate",
-      line_items: [
-        {
-          quantity: 1,
-          price_data: {
-            currency: CURRENCY,
-            product_data: {
-              name: "Custom amount donation",
-            },
-            unit_amount: formatAmountForStripe(
-              Number(data.get("customDonation") as string),
-              CURRENCY
-            ),
-          },
-        },
-      ],
-      ...(ui_mode === "hosted" && {
-        success_url: `${origin}/donate-with-checkout/result?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${origin}/donate-with-checkout`,
-      }),
-      ...(ui_mode === "embedded" && {
-        return_url: `${origin}/donate-with-embedded-checkout/result?session_id={CHECKOUT_SESSION_ID}`,
-      }),
-      ui_mode,
-    });
-
-  return {
-    client_secret: checkoutSession.client_secret,
-    url: checkoutSession.url,
-  };
-}
-
 export async function createPaymentIntent(
   amt: number
 ): Promise<{ client_secret: string; id: string }> {
@@ -74,15 +25,18 @@ export async function createPaymentIntent(
 }
 
 export async function capturePaymentIntent(
-  paymentIntentId: string,
-  connectedAccountId: string
-): Promise<{ client_secret: string; id: string }> {
+  paymentIntentId: string
+): Promise<Stripe.PaymentIntent> {
   const paymentIntent: Stripe.PaymentIntent =
     await stripe.paymentIntents.capture(paymentIntentId);
-  return {
-    client_secret: paymentIntent.client_secret as string,
-    id: paymentIntent.id,
-  };
+  return paymentIntent;
+}
+export async function denyPaymentIntent(
+  paymentIntentId: string
+): Promise<Stripe.PaymentIntent> {
+  const paymentIntent: Stripe.PaymentIntent =
+    await stripe.paymentIntents.cancel(paymentIntentId);
+  return paymentIntent;
 }
 export async function createStripeAccount() {
   const account = await stripe.accounts.create({ type: "standard" });
@@ -125,4 +79,16 @@ export async function fetchClientSecretAccount(account: string) {
     },
   });
   return accountLink;
+}
+
+export async function transferToConnectedAccount(
+  connectedAccountId: string,
+  amount: number
+) {
+  const transfer = await stripe.transfers.create({
+    amount: formatAmountForStripe(amount, CURRENCY),
+    currency: CURRENCY,
+    destination: connectedAccountId,
+  });
+  return transfer;
 }
